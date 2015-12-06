@@ -1,0 +1,82 @@
+package me.modmuss50.fr.client
+
+import me.modmuss50.fr.WorldState
+import net.minecraft.block.state.IBlockState
+import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.block.model.*
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
+import net.minecraft.client.resources.model.IBakedModel
+import net.minecraft.client.resources.model.ModelRotation
+import net.minecraft.util.EnumFacing
+import net.minecraftforge.client.model.ISmartBlockModel
+import org.lwjgl.util.vector.Vector3f
+import reborncore.common.misc.vecmath.Vecs3dCube
+import java.util.*
+
+
+class PipeModel : ISmartBlockModel {
+
+    internal var faceBakery = FaceBakery()
+    internal var texture: TextureAtlasSprite? = null
+
+    init  {
+        texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite("minecraft:blocks/stone")
+    }
+
+    constructor(state : WorldState){
+
+    }
+
+    constructor(){
+
+    }
+
+    override fun handleBlockState(state: IBlockState): IBakedModel {
+        if(state is  WorldState){
+            return PipeModel(state as WorldState)
+        }
+        return null!!;
+    }
+
+    override fun getFaceQuads(p_177551_1_: EnumFacing): List<BakedQuad> {
+        return ArrayList()
+    }
+
+    override fun getGeneralQuads(): List<BakedQuad> {
+        val list = ArrayList<BakedQuad>()
+        val uv = BlockFaceUV(floatArrayOf(0.0f, 0.0f, 16.0f, 16.0f), 0)
+        val face = BlockPartFace(null, 0, "", uv)
+        addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0)
+        return list
+    }
+
+    fun addCubeToList(cube: Vecs3dCube, list: ArrayList<BakedQuad>, face: BlockPartFace, modelRotation: ModelRotation) {
+        list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.minY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.DOWN, modelRotation, null, true, true))//down
+        list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.maxY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.UP, modelRotation, null, true, true))//up
+        list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.NORTH, modelRotation, null, true, true))//north
+        list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.maxZ.toFloat()), Vector3f(cube.maxZ.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.SOUTH, modelRotation, null, true, true))//south
+        list.add(faceBakery.makeBakedQuad(Vector3f(cube.maxX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.EAST, modelRotation, null, true, true))//east
+        list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.minX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.WEST, modelRotation, null, true, true))//west
+    }
+
+
+    override fun isAmbientOcclusion(): Boolean {
+        return false
+    }
+
+    override fun isGui3d(): Boolean {
+        return true
+    }
+
+    override fun isBuiltInRenderer(): Boolean {
+        return false
+    }
+
+    override fun getParticleTexture(): TextureAtlasSprite {
+        return texture!!
+    }
+
+    override fun getItemCameraTransforms(): ItemCameraTransforms? {
+        return null
+    }
+}
