@@ -1,6 +1,7 @@
 package me.modmuss50.fr.client
 
 import me.modmuss50.fr.WorldState
+import me.modmuss50.fr.tile.TilePipe
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.*
@@ -19,12 +20,15 @@ class PipeModel : ISmartBlockModel {
     internal var faceBakery = FaceBakery()
     internal var texture: TextureAtlasSprite? = null
 
+    var tile : TilePipe? = null
+
     init  {
         texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite("minecraft:blocks/stone")
     }
 
     constructor(state : WorldState){
-
+        tile = state.blockAccess.getTileEntity(state.pos) as TilePipe?
+        texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite(state.typeEnum.textureName)
     }
 
     constructor(){
@@ -33,7 +37,7 @@ class PipeModel : ISmartBlockModel {
 
     override fun handleBlockState(state: IBlockState): IBakedModel {
         if(state is  WorldState){
-            return PipeModel(state as WorldState)
+            return PipeModel(state)
         }
         return null!!;
     }
@@ -47,6 +51,28 @@ class PipeModel : ISmartBlockModel {
         val uv = BlockFaceUV(floatArrayOf(0.0f, 0.0f, 16.0f, 16.0f), 0)
         val face = BlockPartFace(null, 0, "", uv)
         addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0)
+        if(tile != null){
+            val pipe = tile
+            if(pipe.connects(EnumFacing.UP)){
+                addCubeToList(Vecs3dCube(4.0, 12.0, 4.0, 12.0, 16.0, 12.0), list, face, ModelRotation.X0_Y0)
+            }
+            if(pipe.connects(EnumFacing.DOWN)){
+                addCubeToList(Vecs3dCube(4.0, 0.0, 4.0, 12.0, 4.0, 12.0), list, face, ModelRotation.X0_Y0)
+            }
+            if(pipe.connects(EnumFacing.NORTH)){
+                addCubeToList(Vecs3dCube(4.0, 4.0, 0.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0)
+            }
+            if(pipe.connects(EnumFacing.SOUTH)){
+                addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 12.0, 12.0, 16.0), list, face, ModelRotation.X0_Y0)
+            }
+            if(pipe.connects(EnumFacing.EAST)){
+                addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 16.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0)
+            }
+            if(pipe.connects(EnumFacing.WEST)){
+                addCubeToList(Vecs3dCube(0.0, 4.0, 4.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0)
+            }
+        }
+
         return list
     }
 
@@ -54,11 +80,10 @@ class PipeModel : ISmartBlockModel {
         list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.minY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.DOWN, modelRotation, null, true, true))//down
         list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.maxY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.UP, modelRotation, null, true, true))//up
         list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.NORTH, modelRotation, null, true, true))//north
-        list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.maxZ.toFloat()), Vector3f(cube.maxZ.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.SOUTH, modelRotation, null, true, true))//south
+        list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.maxZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.SOUTH, modelRotation, null, true, true))//south
         list.add(faceBakery.makeBakedQuad(Vector3f(cube.maxX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.EAST, modelRotation, null, true, true))//east
         list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.minX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, texture, EnumFacing.WEST, modelRotation, null, true, true))//west
     }
-
 
     override fun isAmbientOcclusion(): Boolean {
         return false

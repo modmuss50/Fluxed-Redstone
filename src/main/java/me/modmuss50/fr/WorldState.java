@@ -15,12 +15,14 @@ public class WorldState implements IBlockState {
 
     public IBlockAccess blockAccess;
     public BlockPos pos;
+    public PipeTypeEnum typeEnum;
 
-    public WorldState(IBlockAccess w, BlockPos p)
-    {
-        this.blockAccess = w;
-        this.pos = p;
+    public WorldState(IBlockAccess blockAccess, BlockPos pos, PipeTypeEnum typeEnum) {
+        this.blockAccess = blockAccess;
+        this.pos = pos;
+        this.typeEnum = typeEnum;
     }
+
 
     public Collection getPropertyNames()
     {
