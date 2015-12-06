@@ -23,14 +23,9 @@ public class PipeModel implements ISmartBlockModel {
         texture = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/stone");
     }
 
-    public PipeModel(IBlockState blockState) {
-        String textureName = blockState.getValue(BlockPipe.TYPE_PROP).textureName;
-        texture = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(textureName);
-    }
-
     @Override
     public IBakedModel handleBlockState(IBlockState state) {
-        return new PipeModel(state);
+        return new PipeModel();
     }
 
     @Override

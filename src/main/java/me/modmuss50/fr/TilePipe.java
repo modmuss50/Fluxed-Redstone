@@ -55,37 +55,14 @@ public class TilePipe extends TileEntity implements ITickable {
     }
 
 
-    @Override
-    public void update() {
-        if(worldObj.getWorldTime() % 60 == 0){
-            for(EnumFacing facing : EnumFacing.values()){
-                BlockPos newPos = getPos().add(facing.getFrontOffsetX(), facing.getFrontOffsetY(), facing.getFrontOffsetZ());
-                TileEntity entity = worldObj.getTileEntity(newPos);
-                setFacing(facing, entity instanceof TilePipe);
-            }
-        }
+    public boolean connects(EnumFacing facing){
+        BlockPos newPos = getPos().add(facing.getFrontOffsetX(), facing.getFrontOffsetY(), facing.getFrontOffsetZ());
+        TileEntity entity = worldObj.getTileEntity(newPos);
+        return entity instanceof TilePipe;
     }
 
-    public void setFacing(EnumFacing facing, boolean isFacing){
-        switch (facing){
-            case NORTH:
-                worldObj.setBlockState(getPos(), worldObj.getBlockState(pos).withProperty(BlockPipe.connectedNorth, isFacing), 2);
-                break;
-            case SOUTH:
-                worldObj.setBlockState(getPos(), worldObj.getBlockState(pos).withProperty(BlockPipe.connectedSouth, isFacing), 2);
-                break;
-            case EAST:
-                worldObj.setBlockState(getPos(), worldObj.getBlockState(pos).withProperty(BlockPipe.connectedEast, isFacing), 2);
-                break;
-            case WEST:
-                worldObj.setBlockState(getPos(), worldObj.getBlockState(pos).withProperty(BlockPipe.connectedWest, isFacing), 2);
-                break;
-            case UP:
-                worldObj.setBlockState(getPos(), worldObj.getBlockState(pos).withProperty(BlockPipe.connectedUp, isFacing), 2);
-                break;
-            case DOWN:
-                worldObj.setBlockState(getPos(), worldObj.getBlockState(pos).withProperty(BlockPipe.connectedDown, isFacing), 2);
-                break;
-        }
+    @Override
+    public void update() {
+
     }
 }
