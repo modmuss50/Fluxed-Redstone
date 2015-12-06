@@ -1,0 +1,4 @@
+tile.pipe:STONE.name=Stone flux duct
+tile.pipe:IRON.name=Iron flux duct
+tile.pipe:GOLD.name=Gold flux duct
+tile.pipe:DIAMOND.name=Diamond flux duct
