@@ -11,12 +11,14 @@ class TilePipe : TileEntity(), ITickable {
 
     public var powerNetwork = PowerNetwork()
 
+    init{
+        powerNetwork == null;
+    }
+
     override fun update() {
         if (powerNetwork == null) {
             findAndJoinNetwork(worldObj, getPos().x, getPos().y, getPos().z)
-        } else {
-            println(powerNetwork.pipes.size)
-        }
+        } 
     }
 
     fun connects(facing: EnumFacing): Boolean {
@@ -61,5 +63,10 @@ class TilePipe : TileEntity(), ITickable {
         this.removeFromNetwork()
         this.resetNetwork()
         this.findAndJoinNetwork(worldObj, getPos().x, getPos().y, getPos().z)
+    }
+
+    override fun onLoad() {
+        super.onLoad()
+        findAndJoinNetwork(worldObj, getPos().x, getPos().y, getPos().z)
     }
 }

@@ -28,7 +28,7 @@ public class FluxedRedstone {
     public void init(FMLInitializationEvent event) {
         for(PipeTypeEnum typeEnum : PipeTypeEnum.values()){
             Block blockPipe = new BlockPipe(typeEnum);
-            GameRegistry.registerBlock(blockPipe, "FRPipe:" + typeEnum.getFriendlyName()).setUnlocalizedName("FRPipe" + typeEnum.getFriendlyName());
+            GameRegistry.registerBlock(blockPipe, "FRPipe." + typeEnum.getFriendlyName()).setUnlocalizedName("FRPipe." + typeEnum.getFriendlyName());
             pipeTypeEnumBlockHashMap.put(typeEnum, blockPipe);
         }
         GameRegistry.registerTileEntity(TilePipe.class, "FRTilePipe");
