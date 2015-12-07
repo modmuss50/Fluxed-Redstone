@@ -7,38 +7,43 @@ class PowerNetwork {
 
     var pipes = ArrayList<TilePipe>()
 
-    fun addElement(lesuStorage: TilePipe) {
-        if (!pipes.contains(lesuStorage) && pipes.size < 5000) {
-            pipes.add(lesuStorage)
+    /**
+     * This is the current rf for the whole system.
+     */
+    var RF = 0;
+
+    fun addElement(tile: TilePipe) {
+        if (!pipes.contains(tile) && pipes.size < 5000) {
+            pipes.add(tile)
         }
     }
 
-    fun removeElement(lesuStorage: TilePipe) {
-        pipes.remove(lesuStorage)
+    fun removeElement(tile: TilePipe) {
+        pipes.remove(tile)
         rebuild()
     }
 
     private fun rebuild() {
-        for (lesuStorage in pipes) {
-            lesuStorage.findAndJoinNetwork(lesuStorage.world, lesuStorage.pos.x, lesuStorage.pos.y, lesuStorage.pos.z)
+        for (tile in pipes) {
+            tile.findAndJoinNetwork(tile.world, tile.pos.x, tile.pos.y, tile.pos.z)
         }
     }
 
     fun merge(network: PowerNetwork) {
         if (network !== this) {
-            val tileLesuStorages = ArrayList<TilePipe>()
-            tileLesuStorages.addAll(network.pipes)
+            val tiles = ArrayList<TilePipe>()
+            tiles.addAll(network.pipes)
             network.clear(false)
-            for (lesuStorage in tileLesuStorages) {
-                lesuStorage.setNetwork(this)
+            for (tile in tiles) {
+                tile.setNetwork(this)
             }
         }
     }
 
     private fun clear(clearTiles: Boolean) {
         if (clearTiles) {
-            for (tileLesuStorage in pipes) {
-                tileLesuStorage.resetNetwork()
+            for (tile in pipes) {
+                tile.resetNetwork()
             }
         }
         pipes.clear()

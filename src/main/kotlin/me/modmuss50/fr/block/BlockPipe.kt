@@ -16,9 +16,9 @@ import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
 
-class BlockPipe(val  type : PipeTypeEnum) : BlockContainer(Material.iron) {
+class BlockPipe(val  type: PipeTypeEnum) : BlockContainer(Material.iron) {
 
-    init  {
+    init {
         this.setCreativeTab(CreativeTabs.tabRedstone)
         defaultState = this.blockState.baseState
         this.setBlockBounds(0.25f, 0.25f, 0.25f, 0.75f, 0.75f, 0.75f)

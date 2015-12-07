@@ -20,23 +20,23 @@ class PipeModel : ISmartBlockModel {
     internal var faceBakery = FaceBakery()
     internal var texture: TextureAtlasSprite? = null
 
-    var tile : TilePipe? = null
+    var tile: TilePipe? = null
 
-    init  {
+    init {
         texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite("minecraft:blocks/stone")
     }
 
-    constructor(state : WorldState){
+    constructor(state: WorldState) {
         tile = state.blockAccess.getTileEntity(state.pos) as TilePipe?
         texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite(state.typeEnum.textureName)
     }
 
-    constructor(){
+    constructor() {
 
     }
 
     override fun handleBlockState(state: IBlockState): IBakedModel {
-        if(state is  WorldState){
+        if (state is  WorldState) {
             return PipeModel(state)
         }
         return null!!;
@@ -51,24 +51,24 @@ class PipeModel : ISmartBlockModel {
         val uv = BlockFaceUV(floatArrayOf(0.0f, 0.0f, 16.0f, 16.0f), 0)
         val face = BlockPartFace(null, 0, "", uv)
         addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0)
-        if(tile != null){
+        if (tile != null) {
             val pipe = tile
-            if(pipe.connects(EnumFacing.UP)){
+            if (pipe.connects(EnumFacing.UP)) {
                 addCubeToList(Vecs3dCube(4.0, 12.0, 4.0, 12.0, 16.0, 12.0), list, face, ModelRotation.X0_Y0)
             }
-            if(pipe.connects(EnumFacing.DOWN)){
+            if (pipe.connects(EnumFacing.DOWN)) {
                 addCubeToList(Vecs3dCube(4.0, 0.0, 4.0, 12.0, 4.0, 12.0), list, face, ModelRotation.X0_Y0)
             }
-            if(pipe.connects(EnumFacing.NORTH)){
+            if (pipe.connects(EnumFacing.NORTH)) {
                 addCubeToList(Vecs3dCube(4.0, 4.0, 0.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0)
             }
-            if(pipe.connects(EnumFacing.SOUTH)){
+            if (pipe.connects(EnumFacing.SOUTH)) {
                 addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 12.0, 12.0, 16.0), list, face, ModelRotation.X0_Y0)
             }
-            if(pipe.connects(EnumFacing.EAST)){
+            if (pipe.connects(EnumFacing.EAST)) {
                 addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 16.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0)
             }
-            if(pipe.connects(EnumFacing.WEST)){
+            if (pipe.connects(EnumFacing.WEST)) {
                 addCubeToList(Vecs3dCube(0.0, 4.0, 4.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0)
             }
         }

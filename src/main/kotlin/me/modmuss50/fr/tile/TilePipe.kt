@@ -1,5 +1,6 @@
 package me.modmuss50.fr.tile
 
+import me.modmuss50.fr.block.BlockPipe
 import me.modmuss50.fr.powernet.PowerNetwork
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.BlockPos
@@ -11,19 +12,28 @@ class TilePipe : TileEntity(), ITickable {
 
     public var powerNetwork = PowerNetwork()
 
-    init{
+    init {
         powerNetwork == null;
     }
 
     override fun update() {
         if (powerNetwork == null) {
             findAndJoinNetwork(worldObj, getPos().x, getPos().y, getPos().z)
-        } 
+        }
     }
 
     fun connects(facing: EnumFacing): Boolean {
         val newPos = getPos().add(facing.frontOffsetX, facing.frontOffsetY, facing.frontOffsetZ)
         val entity = worldObj.getTileEntity(newPos)
+        if (entity is TilePipe) {
+            val block = worldObj.getBlockState(newPos).block as BlockPipe
+            val type = block.type;
+            val ourBlock = worldObj.getBlockState(pos).block as BlockPipe
+            val ourType = ourBlock.type;
+            if (type != ourType) {
+                return false
+            }
+        }
         return entity is TilePipe
     }
 
@@ -32,7 +42,7 @@ class TilePipe : TileEntity(), ITickable {
         powerNetwork = PowerNetwork()
         powerNetwork.addElement(this)
         for (direction in EnumFacing.values()) {
-            if (world.getTileEntity(BlockPos(x + direction.frontOffsetX, y + direction.frontOffsetY, z + direction.frontOffsetZ)) is TilePipe) {
+            if (connects(direction)) {
                 val pipe = world.getTileEntity(BlockPos(x + direction.frontOffsetX, y + direction.frontOffsetY, z + direction.frontOffsetZ)) as TilePipe
                 if (pipe.powerNetwork != null) {
                     pipe.powerNetwork.merge(powerNetwork)

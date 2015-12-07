@@ -10,7 +10,7 @@ class PipeModelBakery {
 
     @SubscribeEvent
     fun onBakeModel(event: ModelBakeEvent) {
-        for(typeEnum in PipeTypeEnum.values()){
+        for (typeEnum in PipeTypeEnum.values()) {
             event.modelRegistry.putObject(TextureRegistry.getModelResourceLocation(FluxedRedstone.pipeTypeEnumBlockHashMap.get(typeEnum)?.defaultState), PipeModel())
         }
     }
