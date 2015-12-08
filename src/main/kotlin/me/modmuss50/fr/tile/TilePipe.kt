@@ -1,5 +1,6 @@
 package me.modmuss50.fr.tile
 
+import me.modmuss50.fr.api.ICap
 import me.modmuss50.fr.block.BlockPipe
 import me.modmuss50.fr.powernet.PowerNetwork
 import net.minecraft.tileentity.TileEntity
@@ -7,10 +8,12 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ITickable
 import net.minecraft.world.World
+import java.util.*
 
 class TilePipe : TileEntity(), ITickable {
 
     public var powerNetwork = PowerNetwork()
+    public var capMap = HashMap<EnumFacing, ICap>()
 
     init {
         powerNetwork == null;
@@ -75,8 +78,36 @@ class TilePipe : TileEntity(), ITickable {
         this.findAndJoinNetwork(worldObj, getPos().x, getPos().y, getPos().z)
     }
 
-    override fun onLoad() {
-        super.onLoad()
-        findAndJoinNetwork(worldObj, getPos().x, getPos().y, getPos().z)
+    fun addCap(side : EnumFacing, cap : ICap): Boolean{
+        if(capMap.containsKey(side)){
+            return false
+        }
+        capMap.put(side, cap)
+        worldObj.markBlockForUpdate(pos)
+        worldObj.markBlockRangeForRenderUpdate(pos, pos)
+        return true
     }
+
+    fun getCapForSide(side : EnumFacing) : ICap? {
+        if(capMap.contains(side)){
+            return capMap.get(side)
+        } else {
+            return null
+        }
+    }
+
+    fun hasCap(side : EnumFacing) : Boolean{
+        return capMap.containsKey(side)
+    }
+
+    fun removeCap(side : EnumFacing) : Boolean {
+        if(hasCap(side)){
+            capMap.remove(side)
+            worldObj.markBlockForUpdate(pos)
+            worldObj.markBlockRangeForRenderUpdate(pos, pos)
+            return true
+        }
+        return false
+    }
+
 }
