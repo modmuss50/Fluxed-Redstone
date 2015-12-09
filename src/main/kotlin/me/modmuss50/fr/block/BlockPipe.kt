@@ -32,12 +32,12 @@ class BlockPipe(val  type: PipeTypeEnum) : BlockContainer(Material.iron) {
     }
 
     override fun onBlockActivated(worldIn: World?, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
-        if(playerIn!!.heldItem != null && playerIn!!.heldItem.item == Items.apple){
+        if(playerIn!!.heldItem != null && playerIn.heldItem.item == Items.apple){
             var pipe = worldIn!!.getTileEntity(pos) as TilePipe;
             if(!pipe.hasCap(side!!)){
-                return pipe.addCap(side!!, TestCap())
+                return pipe.addCap(side, TestCap())
             } else {
-                return pipe.removeCap(side!!)
+                return pipe.removeCap(side)
             }
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, side, hitX, hitY, hitZ)
@@ -87,26 +87,26 @@ class BlockPipe(val  type: PipeTypeEnum) : BlockContainer(Material.iron) {
     fun getAxisis(worldIn: World?, pos: BlockPos?) : List<AxisAlignedBB>?{
         var list = ArrayList<AxisAlignedBB>()
         if(worldIn!!.getTileEntity(pos) is TilePipe){
-            var pipe = worldIn!!.getTileEntity(pos) as TilePipe
-            list!!.add(Vecs3dCube(0.25, 0.25, 0.25, 0.75, 0.75, 0.75).toAABB())
+            var pipe = worldIn.getTileEntity(pos) as TilePipe
+            list.add(Vecs3dCube(0.25, 0.25, 0.25, 0.75, 0.75, 0.75).toAABB())
 
             if (pipe.connects(EnumFacing.UP) || pipe.hasCap(EnumFacing.UP)) {
-                list!!.add(Vecs3dCube(4.0/16, 12.0/16, 4.0/16, 12.0/16, 16.0/16, 12.0 /16).toAABB())
+                list.add(Vecs3dCube(4.0/16, 12.0/16, 4.0/16, 12.0/16, 16.0/16, 12.0 /16).toAABB())
             }
             if (pipe.connects(EnumFacing.DOWN) || pipe.hasCap(EnumFacing.DOWN)) {
-                list!!.add(Vecs3dCube(4.0/16, 0.0/16, 4.0/16, 12.0/16, 4.0/16, 12.0 /16).toAABB())
+                list.add(Vecs3dCube(4.0/16, 0.0/16, 4.0/16, 12.0/16, 4.0/16, 12.0 /16).toAABB())
             }
             if (pipe.connects(EnumFacing.NORTH) || pipe.hasCap(EnumFacing.NORTH)) {
-                list!!.add(Vecs3dCube(4.0/16, 4.0/16, 4.0/16, 12.0/16, 12.0/16, 0.0 /16).toAABB())
+                list.add(Vecs3dCube(4.0/16, 4.0/16, 4.0/16, 12.0/16, 12.0/16, 0.0 /16).toAABB())
             }
             if (pipe.connects(EnumFacing.SOUTH) || pipe.hasCap(EnumFacing.SOUTH)) {
-                list!!.add(Vecs3dCube(4.0/16, 4.0/16, 12.0/16, 12.0/16, 12.0/16, 16.0 /16).toAABB())
+                list.add(Vecs3dCube(4.0/16, 4.0/16, 12.0/16, 12.0/16, 12.0/16, 16.0 /16).toAABB())
             }
             if (pipe.connects(EnumFacing.EAST) || pipe.hasCap(EnumFacing.EAST)) {
-                list!!.add(Vecs3dCube(12.0/16, 4.0/16, 4.0/16, 16.0/16, 12.0/16, 12.0 /16).toAABB())
+                list.add(Vecs3dCube(12.0/16, 4.0/16, 4.0/16, 16.0/16, 12.0/16, 12.0 /16).toAABB())
             }
             if (pipe.connects(EnumFacing.WEST) || pipe.hasCap(EnumFacing.WEST)) {
-                list!!.add(Vecs3dCube(4.0/16, 4.0/16, 4.0/16, 0.0/16, 12.0/16, 12.0 /16).toAABB())
+                list.add(Vecs3dCube(4.0/16, 4.0/16, 4.0/16, 0.0/16, 12.0/16, 12.0 /16).toAABB())
             }
         }
         return list

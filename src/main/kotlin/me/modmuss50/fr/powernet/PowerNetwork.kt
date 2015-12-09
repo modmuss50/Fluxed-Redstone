@@ -30,7 +30,7 @@ class PowerNetwork {
     }
 
     fun merge(network: PowerNetwork) {
-        if (network !== this) {
+        if (network != this) {
             val tiles = ArrayList<TilePipe>()
             tiles.addAll(network.pipes)
             network.clear(false)
