@@ -1,5 +1,6 @@
 package me.modmuss50.fr.powernet
 
+
 import me.modmuss50.fr.tile.TilePipe
 import java.util.*
 
@@ -7,10 +8,25 @@ class PowerNetwork {
 
     var pipes = ArrayList<TilePipe>()
 
+    var isValid = true;
+
+    constructor(valid : Boolean){
+        isValid = valid
+    }
+
+    constructor(){
+
+    }
+
+
     /**
      * This is the current rf for the whole system.
      */
-    var RF = 0;
+    var networkRF = 0;
+
+    val RFTick = 64;
+
+    val RFPerPipe = 1000;
 
     fun addElement(tile: TilePipe) {
         if (!pipes.contains(tile) && pipes.size < 5000) {
@@ -37,6 +53,7 @@ class PowerNetwork {
             for (tile in tiles) {
                 tile.setNetwork(this)
             }
+            networkRF = Math.min(network.networkRF, (pipes.size * RFPerPipe))
         }
     }
 
@@ -48,5 +65,4 @@ class PowerNetwork {
         }
         pipes.clear()
     }
-
 }

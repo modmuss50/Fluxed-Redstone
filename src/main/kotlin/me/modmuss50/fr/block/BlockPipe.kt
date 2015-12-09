@@ -32,14 +32,16 @@ class BlockPipe(val  type: PipeTypeEnum) : BlockContainer(Material.iron) {
     }
 
     override fun onBlockActivated(worldIn: World?, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
+        var pipe = worldIn!!.getTileEntity(pos) as TilePipe;
         if(playerIn!!.heldItem != null && playerIn.heldItem.item == Items.apple){
-            var pipe = worldIn!!.getTileEntity(pos) as TilePipe;
             if(!pipe.hasCap(side!!)){
                 return pipe.addCap(side, TestCap())
             } else {
                 return pipe.removeCap(side)
             }
         }
+        if(!worldIn.isRemote)
+            playerIn.addChatComponentMessage(ChatComponentText("${EnumChatFormatting.BLUE}${pipe.powerNetwork.pipes.size}${EnumChatFormatting.GRAY} connected pipes that are storing ${EnumChatFormatting.GREEN}${pipe.powerNetwork.networkRF} RF"))
         return super.onBlockActivated(worldIn, pos, state, playerIn, side, hitX, hitY, hitZ)
     }
 
@@ -132,5 +134,13 @@ class BlockPipe(val  type: PipeTypeEnum) : BlockContainer(Material.iron) {
             return result.box!!.offset(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())
         }
         return super.getSelectedBoundingBox(worldIn, pos)
+    }
+
+    override fun removedByPlayer(world: World?, pos: BlockPos?, player: EntityPlayer?, willHarvest: Boolean): Boolean {
+        var tile = world!!.getTileEntity(pos)
+        if(tile is TilePipe){
+            tile.powerNetwork.removeElement(tile)
+        }
+        return super.removedByPlayer(world, pos, player, willHarvest)
     }
 }
