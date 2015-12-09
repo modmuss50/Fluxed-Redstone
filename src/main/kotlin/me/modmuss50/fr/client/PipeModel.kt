@@ -30,7 +30,7 @@ class PipeModel : ISmartBlockModel {
 
     constructor(state: WorldState) {
         tile = state.blockAccess.getTileEntity(state.pos) as TilePipe?
-        texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite(state.typeEnum.textureName)
+        //TODO load cap texture
     }
 
     constructor() {

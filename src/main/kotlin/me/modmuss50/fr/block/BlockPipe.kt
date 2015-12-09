@@ -1,6 +1,5 @@
 package me.modmuss50.fr.block
 
-import me.modmuss50.fr.PipeTypeEnum
 import me.modmuss50.fr.WorldState
 import me.modmuss50.fr.caps.TestCap
 import me.modmuss50.fr.raytrace.RayTracer
@@ -23,7 +22,7 @@ import reborncore.common.misc.vecmath.Vecs3dCube
 import java.util.*
 
 
-class BlockPipe(val  type: PipeTypeEnum) : BlockContainer(Material.iron) {
+class BlockPipe : BlockContainer(Material.iron) {
 
     init {
         this.setCreativeTab(CreativeTabs.tabRedstone)
@@ -34,13 +33,21 @@ class BlockPipe(val  type: PipeTypeEnum) : BlockContainer(Material.iron) {
     override fun onBlockActivated(worldIn: World?, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         var pipe = worldIn!!.getTileEntity(pos) as TilePipe;
         if(playerIn!!.heldItem != null && playerIn.heldItem.item == Items.apple){
+            var tracer = RayTracer()
+            var result = tracer.getCollision(worldIn, pos!!, playerIn, getAxisis(worldIn, pos)!!)
+            if(result.valid()){
+                var cap = getCap(result.box!!)
+                if(cap != null){
+                    return pipe.removeCap(cap)
+                }
+            }
             if(!pipe.hasCap(side!!)){
                 return pipe.addCap(side, TestCap())
             } else {
                 return pipe.removeCap(side)
             }
         }
-        if(!worldIn.isRemote)
+        if(!worldIn.isRemote && playerIn.heldItem == null )
             playerIn.addChatComponentMessage(ChatComponentText("${EnumChatFormatting.BLUE}${pipe.powerNetwork.pipes.size}${EnumChatFormatting.GRAY} connected pipes that are storing ${EnumChatFormatting.GREEN}${pipe.powerNetwork.networkRF} RF"))
         return super.onBlockActivated(worldIn, pos, state, playerIn, side, hitX, hitY, hitZ)
     }
@@ -79,7 +86,7 @@ class BlockPipe(val  type: PipeTypeEnum) : BlockContainer(Material.iron) {
     }
 
     override fun getExtendedState(state: IBlockState?, world: IBlockAccess?, pos: BlockPos?): IBlockState? {
-        return WorldState(world, pos, type);
+        return WorldState(world, pos);
     }
 
     override fun addCollisionBoxesToList(worldIn: World?, pos: BlockPos?, state: IBlockState?, mask: AxisAlignedBB?, list: MutableList<AxisAlignedBB>?, collidingEntity: Entity?) {
@@ -112,6 +119,34 @@ class BlockPipe(val  type: PipeTypeEnum) : BlockContainer(Material.iron) {
             }
         }
         return list
+    }
+
+
+    fun getCap(axisAlignedBB: AxisAlignedBB) :EnumFacing?{
+        if(equals(Vecs3dCube(4.0/16, 12.0/16, 4.0/16, 12.0/16, 16.0/16, 12.0 /16).toAABB(), axisAlignedBB)){
+            return EnumFacing.UP
+        }
+        if(equals(Vecs3dCube(4.0/16, 0.0/16, 4.0/16, 12.0/16, 4.0/16, 12.0 /16).toAABB(), axisAlignedBB)){
+            return EnumFacing.DOWN
+        }
+        if(equals(Vecs3dCube(4.0/16, 4.0/16, 4.0/16, 12.0/16, 12.0/16, 0.0 /16).toAABB(), axisAlignedBB)){
+            return EnumFacing.NORTH
+        }
+        if(equals(Vecs3dCube(4.0/16, 4.0/16, 12.0/16, 12.0/16, 12.0/16, 16.0 /16).toAABB(), axisAlignedBB)){
+            return EnumFacing.SOUTH
+        }
+        if(equals(Vecs3dCube(12.0/16, 4.0/16, 4.0/16, 16.0/16, 12.0/16, 12.0 /16).toAABB(), axisAlignedBB)){
+            return EnumFacing.EAST
+        }
+        if(equals(Vecs3dCube(4.0/16, 4.0/16, 4.0/16, 0.0/16, 12.0/16, 12.0 /16).toAABB(), axisAlignedBB)){
+            return EnumFacing.WEST
+        }
+
+        return null
+    }
+
+    fun equals(a: AxisAlignedBB, b: AxisAlignedBB) : Boolean{
+        return a.maxX.equals(b.maxX) && a.maxY.equals(b.maxY) && a.maxZ.equals(b.maxZ) && a.minX.equals(b.minX) && a.minY.equals(b.minY) && a.minZ.equals(b.minZ)
     }
 
     override fun getCollisionBoundingBox(worldIn: World?, pos: BlockPos?, state: IBlockState?): AxisAlignedBB? {

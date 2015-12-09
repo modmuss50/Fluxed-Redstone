@@ -29,8 +29,8 @@ class TilePipe : TileEntity(), ITickable {
             findAndJoinNetwork(worldObj, getPos().x, getPos().y, getPos().z)
         } else {
             val block = worldObj.getBlockState(pos).block as BlockPipe
-            val RFTick = block.type.maxRF
             for(face in capMap.keys.toArrayList()){
+                val RFTick = capMap.get(face)!!.getType().maxRF
                 var tile = world.getTileEntity(pos.offset(face))
                 if (tile is IEnergyConnection) {
                     if(tile.canConnectEnergy(face)){
@@ -55,15 +55,6 @@ class TilePipe : TileEntity(), ITickable {
     fun connects(facing: EnumFacing): Boolean {
         val newPos = getPos().add(facing.frontOffsetX, facing.frontOffsetY, facing.frontOffsetZ)
         val entity = worldObj.getTileEntity(newPos)
-        if (entity is TilePipe) {
-            val block = worldObj.getBlockState(newPos).block as BlockPipe
-            val type = block.type;
-            val ourBlock = worldObj.getBlockState(pos).block as BlockPipe
-            val ourType = ourBlock.type;
-            if (type != ourType) {
-                return false
-            }
-        }
         if (entity is TilePipe) {
             val tilePipe = entity
             if (!hasCap(facing) && !tilePipe.hasCap(facing.opposite)) {

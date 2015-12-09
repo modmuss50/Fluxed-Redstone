@@ -21,16 +21,12 @@ import java.util.HashMap;
 @Mod(modid = "fluxedredstone", name = "FluxedRedstone", version = "@MODVERSION@")
 public class FluxedRedstone {
 
-    public static HashMap<PipeTypeEnum, Block> pipeTypeEnumBlockHashMap = new HashMap<>();
-
+    public static Block blockPipe;
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        for(PipeTypeEnum typeEnum : PipeTypeEnum.values()){
-            Block blockPipe = new BlockPipe(typeEnum);
-            GameRegistry.registerBlock(blockPipe, "FRPipe." + typeEnum.getFriendlyName()).setUnlocalizedName("FRPipe." + typeEnum.getFriendlyName());
-            pipeTypeEnumBlockHashMap.put(typeEnum, blockPipe);
-        }
+        blockPipe = new BlockPipe().setUnlocalizedName("FRPipe");
+        GameRegistry.registerBlock(blockPipe, "FRPipe");
         GameRegistry.registerTileEntity(TilePipe.class, "FRTilePipe");
         MinecraftForge.EVENT_BUS.register(new PipeModelBakery());
     }
