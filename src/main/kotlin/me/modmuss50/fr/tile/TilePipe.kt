@@ -37,7 +37,13 @@ class TilePipe : TileEntity(), ITickable {
                 return false
             }
         }
-        return entity is TilePipe
+        if(entity is TilePipe){
+            val tilePipe = entity
+            if(!hasCap(facing) && ! tilePipe.hasCap(facing.opposite)){
+                return true
+            }
+        }
+        return false
     }
 
 
