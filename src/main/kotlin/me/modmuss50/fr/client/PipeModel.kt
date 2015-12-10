@@ -24,8 +24,8 @@ class PipeModel : ISmartBlockModel {
     var tile: TilePipe? = null
 
     init {
-        texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite("minecraft:blocks/stone")
-        capTexture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite("minecraft:blocks/iron_block")
+        texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite("fluxedredstone:blocks/cable")
+        capTexture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite("fluxedredstone:blocks/cap")
     }
 
     constructor(state: WorldState) {

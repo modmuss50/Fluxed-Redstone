@@ -122,6 +122,7 @@ class BlockPipe : BlockContainer(Material.iron) {
     }
 
 
+    //TODO recode this horrible code
     fun getCap(axisAlignedBB: AxisAlignedBB) :EnumFacing?{
         if(equals(Vecs3dCube(4.0/16, 12.0/16, 4.0/16, 12.0/16, 16.0/16, 12.0 /16).toAABB(), axisAlignedBB)){
             return EnumFacing.UP
