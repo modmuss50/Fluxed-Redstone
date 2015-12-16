@@ -2,6 +2,7 @@ package me.modmuss50.fr;
 
 import me.modmuss50.fr.block.BlockPipe;
 import me.modmuss50.fr.client.PipeModelBakery;
+import me.modmuss50.fr.client.PipeTESR;
 import me.modmuss50.fr.tile.TilePipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -10,11 +11,13 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import reborncore.api.TextureRegistry;
+import techreborn.tiles.TileVacuumFreezer;
 
 import java.util.HashMap;
 
@@ -29,6 +32,7 @@ public class FluxedRedstone {
         GameRegistry.registerBlock(blockPipe, "FRPipe");
         GameRegistry.registerTileEntity(TilePipe.class, "FRTilePipe");
         MinecraftForge.EVENT_BUS.register(new PipeModelBakery());
+        ClientRegistry.bindTileEntitySpecialRenderer(TilePipe.class, new PipeTESR());
     }
 
 }

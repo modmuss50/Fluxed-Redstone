@@ -27,7 +27,7 @@ class BlockPipe : BlockContainer(Material.iron) {
     init {
         this.setCreativeTab(CreativeTabs.tabRedstone)
         defaultState = this.blockState.baseState
-        this.setBlockBounds(0.25f, 0.25f, 0.25f, 0.75f, 0.75f, 0.75f)
+       // this.setBlockBounds(0.25f, 0.25f, 0.25f, 0.75f, 0.75f, 0.75f)
     }
 
     override fun onBlockActivated(worldIn: World?, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
@@ -47,8 +47,6 @@ class BlockPipe : BlockContainer(Material.iron) {
                 return pipe.removeCap(side)
             }
         }
-        if(!worldIn.isRemote && playerIn.heldItem == null )
-            playerIn.addChatComponentMessage(ChatComponentText("${EnumChatFormatting.BLUE}${pipe.powerNetwork.pipes.size}${EnumChatFormatting.GRAY} connected pipes that are storing ${EnumChatFormatting.GREEN}${pipe.powerNetwork.networkRF} RF"))
         return super.onBlockActivated(worldIn, pos, state, playerIn, side, hitX, hitY, hitZ)
     }
 
@@ -60,23 +58,11 @@ class BlockPipe : BlockContainer(Material.iron) {
         return 3
     }
 
-    override fun isBlockNormalCube(): Boolean {
-        return false
-    }
-
     override fun isOpaqueCube(): Boolean {
         return false
     }
 
-    override fun isFullBlock(): Boolean {
-        return false
-    }
-
     override fun isFullCube(): Boolean {
-        return false
-    }
-
-    override fun isSideSolid(world: IBlockAccess?, pos: BlockPos?, side: EnumFacing?): Boolean {
         return false
     }
 
@@ -89,45 +75,45 @@ class BlockPipe : BlockContainer(Material.iron) {
         return WorldState(world, pos);
     }
 
-    override fun addCollisionBoxesToList(worldIn: World?, pos: BlockPos?, state: IBlockState?, mask: AxisAlignedBB?, list: MutableList<AxisAlignedBB>?, collidingEntity: Entity?) {
-        list!!.addAll(getAxisis(worldIn, pos)!!)
-        setBlockBoundsBasedOnState(worldIn, pos)
-        super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity)
-    }
-
-
-
-    override fun setBlockBoundsBasedOnState(worldIn: IBlockAccess?, pos: BlockPos?) {
-        if(worldIn!!.getTileEntity(pos) is TilePipe) {
-            var pipe = worldIn.getTileEntity(pos) as TilePipe
-            var x1 = 0.25F;
-            var x2 = 1.0F - x1;
-            var y1 = 0.25F;
-            var y2 = 1.0F - y1;
-            var z1 = 0.25F;
-            var z2 = 1.0F - z1;
-            if (pipe.connects(EnumFacing.WEST)) {
-                x1 = 0.0F;
-            }
-            if (pipe.connects(EnumFacing.EAST)) {
-                x2 = 1.0F;
-            }
-            if (pipe.connects(EnumFacing.NORTH)) {
-                z1 = 0.0F;
-            }
-            if (pipe.connects(EnumFacing.SOUTH)) {
-                z2 = 1.0F;
-            }
-            if (pipe.connects(EnumFacing.DOWN)) {
-                y1 = 0.0F;
-            }
-            if (pipe.connects(EnumFacing.UP)) {
-                y2 = 1.0F;
-            }
-            setBlockBounds(x1, y1, z1, x2, y2, z2);
-        }
-    }
-
+//    override fun addCollisionBoxesToList(worldIn: World?, pos: BlockPos?, state: IBlockState?, mask: AxisAlignedBB?, list: MutableList<AxisAlignedBB>?, collidingEntity: Entity?) {
+//        list!!.addAll(getAxisis(worldIn, pos)!!)
+//        setBlockBoundsBasedOnState(worldIn, pos)
+//        super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity)
+//    }
+//
+//
+//
+//    override fun setBlockBoundsBasedOnState(worldIn: IBlockAccess?, pos: BlockPos?) {
+//        if(worldIn!!.getTileEntity(pos) is TilePipe) {
+//            var pipe = worldIn.getTileEntity(pos) as TilePipe
+//            var x1 = 0.25F;
+//            var x2 = 1.0F - x1;
+//            var y1 = 0.25F;
+//            var y2 = 1.0F - y1;
+//            var z1 = 0.25F;
+//            var z2 = 1.0F - z1;
+//            if (pipe.connects(EnumFacing.WEST)) {
+//                x1 = 0.0F;
+//            }
+//            if (pipe.connects(EnumFacing.EAST)) {
+//                x2 = 1.0F;
+//            }
+//            if (pipe.connects(EnumFacing.NORTH)) {
+//                z1 = 0.0F;
+//            }
+//            if (pipe.connects(EnumFacing.SOUTH)) {
+//                z2 = 1.0F;
+//            }
+//            if (pipe.connects(EnumFacing.DOWN)) {
+//                y1 = 0.0F;
+//            }
+//            if (pipe.connects(EnumFacing.UP)) {
+//                y2 = 1.0F;
+//            }
+//            setBlockBounds(x1, y1, z1, x2, y2, z2);
+//        }
+//    }
+//
     fun getAxisis(worldIn: World?, pos: BlockPos?) : List<AxisAlignedBB>?{
         var list = ArrayList<AxisAlignedBB>()
         if(worldIn!!.getTileEntity(pos) is TilePipe){
@@ -184,34 +170,26 @@ class BlockPipe : BlockContainer(Material.iron) {
     fun equals(a: AxisAlignedBB, b: AxisAlignedBB) : Boolean{
         return a.maxX.equals(b.maxX) && a.maxY.equals(b.maxY) && a.maxZ.equals(b.maxZ) && a.minX.equals(b.minX) && a.minY.equals(b.minY) && a.minZ.equals(b.minZ)
     }
-
-    override fun getCollisionBoundingBox(worldIn: World?, pos: BlockPos?, state: IBlockState?): AxisAlignedBB? {
-        return Vecs3dCube(0.25, 0.25, 0.25, 0.75, 0.75, 0.75).toAABB()
-    }
-
-    override fun collisionRayTrace(worldIn: World?, pos: BlockPos?, start: Vec3?, end: Vec3?): MovingObjectPosition? {
-        var tracer = RayTracer()
-        var result = tracer.getCollision(worldIn!!, pos!!, start!!, end!!, getAxisis(worldIn, pos)!!)
-        if(result.valid()){
-            return result.hit
-        }
-        return null
-    }
-
-    override fun getSelectedBoundingBox(worldIn: World?, pos: BlockPos?): AxisAlignedBB? {
-        var tracer = RayTracer()
-        var result = tracer.getCollision(worldIn!!, pos!!, Minecraft.getMinecraft().thePlayer, getAxisis(worldIn, pos)!!)
-        if(result.valid()){
-            return result.box!!.offset(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())
-        }
-        return super.getSelectedBoundingBox(worldIn, pos)
-    }
-
-    override fun removedByPlayer(world: World?, pos: BlockPos?, player: EntityPlayer?, willHarvest: Boolean): Boolean {
-        var tile = world!!.getTileEntity(pos)
-        if(tile is TilePipe){
-            tile.powerNetwork.removeElement(tile)
-        }
-        return super.removedByPlayer(world, pos, player, willHarvest)
-    }
+//
+//    override fun getCollisionBoundingBox(worldIn: World?, pos: BlockPos?, state: IBlockState?): AxisAlignedBB? {
+//        return Vecs3dCube(0.25, 0.25, 0.25, 0.75, 0.75, 0.75).toAABB()
+//    }
+//
+//    override fun collisionRayTrace(worldIn: World?, pos: BlockPos?, start: Vec3?, end: Vec3?): MovingObjectPosition? {
+//        var tracer = RayTracer()
+//        var result = tracer.getCollision(worldIn!!, pos!!, start!!, end!!, getAxisis(worldIn, pos)!!)
+//        if(result.valid()){
+//            return result.hit
+//        }
+//        return null
+//    }
+//
+//    override fun getSelectedBoundingBox(worldIn: World?, pos: BlockPos?): AxisAlignedBB? {
+//        var tracer = RayTracer()
+//        var result = tracer.getCollision(worldIn!!, pos!!, Minecraft.getMinecraft().thePlayer, getAxisis(worldIn, pos)!!)
+//        if(result.valid()){
+//            return result.box!!.offset(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())
+//        }
+//        return super.getSelectedBoundingBox(worldIn, pos)
+//    }
 }
