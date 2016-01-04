@@ -1,7 +1,6 @@
 package me.modmuss50.fr.tile
 
 import me.modmuss50.fr.api.ICap
-import net.minecraft.inventory.IInventory
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ITickable
@@ -25,12 +24,9 @@ class TilePipe : TileEntity(), ITickable {
                 return true
             }
         }
-        if(entity is IInventory){
-            return true
-        }
         return false
     }
-
+    
     fun addCap(side: EnumFacing, cap: ICap): Boolean {
         if (capMap.containsKey(side)) {
             return false
