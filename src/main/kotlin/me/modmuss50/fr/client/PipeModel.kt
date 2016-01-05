@@ -1,6 +1,8 @@
 package me.modmuss50.fr.client
 
+import me.modmuss50.fr.FluxedRedstone
 import me.modmuss50.fr.WorldState
+import me.modmuss50.fr.mutlipart.MultipartPipe
 import me.modmuss50.fr.tile.TilePipe
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
@@ -10,6 +12,7 @@ import net.minecraft.client.resources.model.IBakedModel
 import net.minecraft.client.resources.model.ModelRotation
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.client.model.ISmartBlockModel
+import net.minecraftforge.common.property.IExtendedBlockState
 import org.lwjgl.util.vector.Vector3f
 import reborncore.common.misc.vecmath.Vecs3dCube
 import java.util.*
@@ -21,16 +24,15 @@ class PipeModel : ISmartBlockModel {
     internal var texture: TextureAtlasSprite? = null
     internal var capTexture: TextureAtlasSprite? = null
 
-    var tile: TilePipe? = null
+    var state: IExtendedBlockState? = null
 
     init {
         texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite("fluxedredstone:blocks/cable")
         capTexture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite("fluxedredstone:blocks/cap")
     }
 
-    constructor(state: WorldState) {
-        tile = state.blockAccess.getTileEntity(state.pos) as TilePipe?
-        //TODO load cap texture
+    constructor(state: IExtendedBlockState) {
+        this.state = state
     }
 
     constructor() {
@@ -38,7 +40,8 @@ class PipeModel : ISmartBlockModel {
     }
 
     override fun handleBlockState(state: IBlockState): IBakedModel {
-        if (state is  WorldState) {
+        println(state)
+        if (state is  IExtendedBlockState) {
             return PipeModel(state)
         }
         return null!!;
@@ -53,24 +56,23 @@ class PipeModel : ISmartBlockModel {
         val uv = BlockFaceUV(floatArrayOf(0.0f, 0.0f, 16.0f, 16.0f), 0)
         val face = BlockPartFace(null, 0, "", uv)
         addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
-        if (tile != null) {
-            val pipe = tile
-            if (pipe.connects(EnumFacing.UP)) {
+        if(state != null){
+            if (state!!.getValue(FluxedRedstone.stateHelper.UP)) {
                 addCubeToList(Vecs3dCube(4.0, 12.0, 4.0, 12.0, 16.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
             }
-            if (pipe.connects(EnumFacing.DOWN)) {
+            if (state!!.getValue(FluxedRedstone.stateHelper.DOWN)) {
                 addCubeToList(Vecs3dCube(4.0, 0.0, 4.0, 12.0, 4.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
             }
-            if (pipe.connects(EnumFacing.NORTH)) {
+            if (state!!.getValue(FluxedRedstone.stateHelper.NORTH)) {
                 addCubeToList(Vecs3dCube(4.0, 4.0, 0.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
             }
-            if (pipe.connects(EnumFacing.SOUTH)) {
+            if (state!!.getValue(FluxedRedstone.stateHelper.SOUTH)) {
                 addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 12.0, 12.0, 16.0), list, face, ModelRotation.X0_Y0, texture!!)
             }
-            if (pipe.connects(EnumFacing.EAST)) {
+            if (state!!.getValue(FluxedRedstone.stateHelper.EAST)) {
                 addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 16.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
             }
-            if (pipe.connects(EnumFacing.WEST)) {
+            if (state!!.getValue(FluxedRedstone.stateHelper.WEST)) {
                 addCubeToList(Vecs3dCube(0.0, 4.0, 4.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
             }
         }

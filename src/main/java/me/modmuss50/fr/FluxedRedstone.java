@@ -5,6 +5,7 @@ import me.modmuss50.fr.block.BlockPipe;
 import me.modmuss50.fr.client.PipeModelBakery;
 import me.modmuss50.fr.mutlipart.ItemMultipartPipe;
 import me.modmuss50.fr.mutlipart.MultipartPipe;
+import me.modmuss50.fr.mutlipart.PipeStateHelper;
 import me.modmuss50.fr.tile.TilePipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -29,6 +30,7 @@ public class FluxedRedstone {
     //public static Block blockPipe;
 
     public static Item itemMultiPipe;
+    public static PipeStateHelper stateHelper = new PipeStateHelper();
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {

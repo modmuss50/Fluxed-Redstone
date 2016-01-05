@@ -5,5 +5,4 @@ package me.modmuss50.fr;
  */
 public class test {
 
-
 }

@@ -4,16 +4,21 @@ import cofh.api.energy.IEnergyConnection
 import mcmultipart.MCMultiPartMod
 import mcmultipart.microblock.IMicroblock
 import mcmultipart.multipart.*
+import me.modmuss50.fr.FluxedRedstone
 import me.modmuss50.fr.WorldState
 import net.minecraft.block.Block
+import net.minecraft.block.properties.IProperty
+import net.minecraft.block.properties.PropertyBool
 import net.minecraft.block.state.BlockState
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
-import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.world.World
+import net.minecraftforge.common.property.ExtendedBlockState
+import net.minecraftforge.common.property.IExtendedBlockState
+import net.minecraftforge.common.property.IUnlistedProperty
 import reborncore.common.misc.Functions
 import reborncore.common.misc.vecmath.Vecs3dCube
 import java.util.*
@@ -164,7 +169,9 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart {
     }
 
     override fun getExtendedState(state: IBlockState?): IBlockState? {
-        return WorldState(world, getPos())
+        var extState = state as IExtendedBlockState;
+
+        return extState.withProperty(FluxedRedstone.stateHelper.UP, shouldConnectTo(pos, EnumFacing.UP))!!.withProperty(FluxedRedstone.stateHelper.DOWN, shouldConnectTo(pos, EnumFacing.DOWN))!!.withProperty(FluxedRedstone.stateHelper.NORTH, shouldConnectTo(pos, EnumFacing.NORTH))!!.withProperty(FluxedRedstone.stateHelper.EAST, shouldConnectTo(pos, EnumFacing.EAST))!!.withProperty(FluxedRedstone.stateHelper.WEST, shouldConnectTo(pos, EnumFacing.WEST))!!.withProperty(FluxedRedstone.stateHelper.SOUTH, shouldConnectTo(pos, EnumFacing.SOUTH))
     }
 
     override fun onAdded() {
@@ -180,6 +187,7 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart {
     }
 
     override fun createBlockState(): BlockState? {
-        return BlockState(MCMultiPartMod.multipart)
+        //return BlockState(MCMultiPartMod.multipart, FluxedRedstone.stateHelper.UP, FluxedRedstone.stateHelper.DOWN, FluxedRedstone.stateHelper.NORTH, FluxedRedstone.stateHelper.EAST, FluxedRedstone.stateHelper.WEST, FluxedRedstone.stateHelper.SOUTH)
+        return ExtendedBlockState(MCMultiPartMod.multipart, arrayOfNulls(0), arrayOf(FluxedRedstone.stateHelper.UP, FluxedRedstone.stateHelper.DOWN, FluxedRedstone.stateHelper.NORTH, FluxedRedstone.stateHelper.EAST, FluxedRedstone.stateHelper.WEST, FluxedRedstone.stateHelper.SOUTH))
     }
 }
