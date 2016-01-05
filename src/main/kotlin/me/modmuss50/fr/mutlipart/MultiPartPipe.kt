@@ -1,8 +1,8 @@
 package me.modmuss50.fr.mutlipart
 
-import cofh.api.energy.EnergyStorage
 import cofh.api.energy.IEnergyConnection
-import cofh.api.energy.IEnergyHandler
+import cofh.api.energy.IEnergyProvider
+import cofh.api.energy.IEnergyReceiver
 import mcmultipart.MCMultiPartMod
 import mcmultipart.microblock.IMicroblock
 import mcmultipart.multipart.*
@@ -34,6 +34,10 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
     var offset = 0.1F
 
     var connectedSides = HashMap<EnumFacing, BlockPos>()
+
+    var power = 0;
+    var rfMove = 320;
+    var rfStore = 1000;
 
     init {
         refreshBounding()
@@ -199,6 +203,36 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
             }
             if (world.isRemote)
                 return
+
+            for(face in EnumFacing.values){
+                var offPos = pos.offset(face)
+                var tile = world.getTileEntity(offPos)
+                if(tile is IEnergyConnection){
+                    if(tile is IEnergyProvider){
+                        if(tile.canConnectEnergy(face)){
+                            var move = tile.extractEnergy(face.opposite, Math.min(rfMove, rfStore - power) , false)
+                            if(move != 0){
+                                power += move;
+                                continue
+                            }
+                        }
+                    }
+                    if(tile is IEnergyReceiver){
+                        if(tile.canConnectEnergy(face)){
+                            var move = tile.receiveEnergy(face.opposite, Math.min(rfMove, power) , false)
+                            if(move != 0){
+                                power -= move;
+                            }
+                        }
+                    }
+                }
+                var pipe = getPipe(world, pos.offset(face), face)
+                if(pipe != null){
+                    var averPower = (power + pipe.power) / 2
+                    pipe.power = averPower
+                    power = averPower
+                }
+            }
         }
     }
 
