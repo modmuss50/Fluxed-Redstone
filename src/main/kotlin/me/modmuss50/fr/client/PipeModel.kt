@@ -1,5 +1,6 @@
 package me.modmuss50.fr.client
 
+import mcmultipart.client.multipart.ISmartMultipartModel
 import me.modmuss50.fr.FluxedRedstone
 import me.modmuss50.fr.WorldState
 import me.modmuss50.fr.mutlipart.MultipartPipe
@@ -18,7 +19,7 @@ import reborncore.common.misc.vecmath.Vecs3dCube
 import java.util.*
 
 
-class PipeModel : ISmartBlockModel {
+class PipeModel : ISmartMultipartModel {
 
     internal var faceBakery = FaceBakery()
     internal var texture: TextureAtlasSprite? = null
@@ -39,12 +40,11 @@ class PipeModel : ISmartBlockModel {
 
     }
 
-    override fun handleBlockState(state: IBlockState): IBakedModel {
-        println(state)
+    override fun handlePartState(p0: IBlockState?): IBakedModel? {
         if (state is  IExtendedBlockState) {
-            return PipeModel(state)
+            return PipeModel(state as IExtendedBlockState)
         }
-        return null!!;
+        return return PipeModel();
     }
 
     override fun getFaceQuads(p_177551_1_: EnumFacing): List<BakedQuad> {
