@@ -91,41 +91,6 @@ class BlockPipe : BlockContainer(Material.iron) {
 
     override fun addCollisionBoxesToList(worldIn: World?, pos: BlockPos?, state: IBlockState?, mask: AxisAlignedBB?, list: MutableList<AxisAlignedBB>?, collidingEntity: Entity?) {
         list!!.addAll(getAxisis(worldIn, pos)!!)
-        setBlockBoundsBasedOnState(worldIn, pos)
-        super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity)
-    }
-
-
-
-    override fun setBlockBoundsBasedOnState(worldIn: IBlockAccess?, pos: BlockPos?) {
-        if(worldIn!!.getTileEntity(pos) is TilePipe) {
-            var pipe = worldIn.getTileEntity(pos) as TilePipe
-            var x1 = 0.25F;
-            var x2 = 1.0F - x1;
-            var y1 = 0.25F;
-            var y2 = 1.0F - y1;
-            var z1 = 0.25F;
-            var z2 = 1.0F - z1;
-            if (pipe.connects(EnumFacing.WEST)) {
-                x1 = 0.0F;
-            }
-            if (pipe.connects(EnumFacing.EAST)) {
-                x2 = 1.0F;
-            }
-            if (pipe.connects(EnumFacing.NORTH)) {
-                z1 = 0.0F;
-            }
-            if (pipe.connects(EnumFacing.SOUTH)) {
-                z2 = 1.0F;
-            }
-            if (pipe.connects(EnumFacing.DOWN)) {
-                y1 = 0.0F;
-            }
-            if (pipe.connects(EnumFacing.UP)) {
-                y2 = 1.0F;
-            }
-            setBlockBounds(x1, y1, z1, x2, y2, z2);
-        }
     }
 
     fun getAxisis(worldIn: World?, pos: BlockPos?) : List<AxisAlignedBB>?{
