@@ -2,9 +2,6 @@ package me.modmuss50.fr.client
 
 import mcmultipart.client.multipart.ISmartMultipartModel
 import me.modmuss50.fr.FluxedRedstone
-import me.modmuss50.fr.WorldState
-import me.modmuss50.fr.mutlipart.MultipartPipe
-import me.modmuss50.fr.tile.TilePipe
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.*
@@ -12,7 +9,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.resources.model.IBakedModel
 import net.minecraft.client.resources.model.ModelRotation
 import net.minecraft.util.EnumFacing
-import net.minecraftforge.client.model.ISmartBlockModel
+import net.minecraftforge.common.property.ExtendedBlockState
 import net.minecraftforge.common.property.IExtendedBlockState
 import org.lwjgl.util.vector.Vector3f
 import reborncore.common.misc.vecmath.Vecs3dCube
@@ -40,11 +37,8 @@ class PipeModel : ISmartMultipartModel {
 
     }
 
-    override fun handlePartState(p0: IBlockState?): IBakedModel? {
-        if (state is  IExtendedBlockState) {
-            return PipeModel(state as IExtendedBlockState)
-        }
-        return return PipeModel();
+    override fun handlePartState(partSate: IBlockState?): IBakedModel? {
+        return PipeModel(partSate as IExtendedBlockState)
     }
 
     override fun getFaceQuads(p_177551_1_: EnumFacing): List<BakedQuad> {
@@ -56,7 +50,7 @@ class PipeModel : ISmartMultipartModel {
         val uv = BlockFaceUV(floatArrayOf(0.0f, 0.0f, 16.0f, 16.0f), 0)
         val face = BlockPartFace(null, 0, "", uv)
         addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
-        if(state != null){
+        if (state != null) {
             if (state!!.getValue(FluxedRedstone.stateHelper.UP)) {
                 addCubeToList(Vecs3dCube(4.0, 12.0, 4.0, 12.0, 16.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
             }
@@ -80,7 +74,7 @@ class PipeModel : ISmartMultipartModel {
         return list
     }
 
-    fun addCubeToList(cube: Vecs3dCube, list: ArrayList<BakedQuad>, face: BlockPartFace, modelRotation: ModelRotation, cubeTexture : TextureAtlasSprite) {
+    fun addCubeToList(cube: Vecs3dCube, list: ArrayList<BakedQuad>, face: BlockPartFace, modelRotation: ModelRotation, cubeTexture: TextureAtlasSprite) {
         list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.minY.toFloat(), cube.maxZ.toFloat()), face, cubeTexture, EnumFacing.DOWN, modelRotation, null, true, true))//down
         list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.maxY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, cubeTexture, EnumFacing.UP, modelRotation, null, true, true))//up
         list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, cubeTexture, EnumFacing.NORTH, modelRotation, null, true, true))//north

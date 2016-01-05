@@ -34,6 +34,10 @@ repositories {
         name = "Modmuss50"
         url = "http://maven.modmuss50.me/"
     }
+	maven {
+		name = "Amadornes"
+		url "http://maven.amadornes.com/" 
+	}
 }
 
 def ENV = System.getenv()
@@ -44,8 +48,8 @@ if (ENV.BUILD_NUMBER) {
 }
 
 minecraft {
-    version = "1.8.8-11.15.0.1609-1.8.8"
-    mappings = 'snapshot_20151205'
+    version = "1.8.9-11.15.0.1674"
+    mappings = 'snapshot_20160103'
     replace "@MODVERSION@", project.version
     makeObfSourceJar = false
     useDepAts = true
@@ -55,8 +59,9 @@ minecraft {
 group = 'FluxedRestone'
 
 dependencies {
-    compile 'RebornCore:RebornCore-1.8.8:1.1.0.+:dev'
-    shade 'org.jetbrains.kotlin:kotlin-stdlib:1.0.0-beta-3595'
+    compile 'RebornCore:RebornCore-1.8.9:1.3.0.+:dev'
+	deobfCompile 'MCMultiPart:MCMultiPart:1.0.1:universal'
+    shade 'org.jetbrains.kotlin:kotlin-stdlib:1.0.0-beta-4584'
 }
 
 

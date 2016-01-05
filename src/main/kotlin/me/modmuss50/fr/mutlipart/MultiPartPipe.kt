@@ -1,24 +1,20 @@
 package me.modmuss50.fr.mutlipart
 
+import cofh.api.energy.EnergyStorage
 import cofh.api.energy.IEnergyConnection
+import cofh.api.energy.IEnergyHandler
 import mcmultipart.MCMultiPartMod
 import mcmultipart.microblock.IMicroblock
 import mcmultipart.multipart.*
 import me.modmuss50.fr.FluxedRedstone
-import me.modmuss50.fr.WorldState
 import net.minecraft.block.Block
-import net.minecraft.block.properties.IProperty
-import net.minecraft.block.properties.PropertyBool
 import net.minecraft.block.state.BlockState
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
-import net.minecraft.util.EnumFacing
+import net.minecraft.util.*
 import net.minecraft.world.World
 import net.minecraftforge.common.property.ExtendedBlockState
 import net.minecraftforge.common.property.IExtendedBlockState
-import net.minecraftforge.common.property.IUnlistedProperty
 import reborncore.common.misc.Functions
 import reborncore.common.misc.vecmath.Vecs3dCube
 import java.util.*
@@ -26,7 +22,7 @@ import java.util.*
 /**
  * Created by mark on 05/01/2016.
  */
-class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart {
+class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
 
     override fun getSlotMask(): EnumSet<PartSlot>? {
         return EnumSet.of(PartSlot.CENTER);
@@ -45,7 +41,7 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart {
 
     fun refreshBounding() {
         val centerFirst = (center - offset).toDouble()
-        val w = 0.3F
+        val w = 0.25F
         boundingBoxes[6] = Vecs3dCube(centerFirst.toDouble() - w - 0.03, centerFirst.toDouble() - w - 0.08, centerFirst.toDouble() - w - 0.03, centerFirst.toDouble() + w + 0.08,
                 centerFirst.toDouble() + w + 0.04, centerFirst.toDouble() + w + 0.08)
 
@@ -89,17 +85,23 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart {
 
 
     override fun addCollisionBoxes(mask: AxisAlignedBB?, list: MutableList<AxisAlignedBB>?, collidingEntity: Entity?) {
-        for(facing in EnumFacing.values){
-            if(connectedSides.containsKey(facing)){
-                list!!.add(boundingBoxes[Functions.getIntDirFromDirection(facing)]!!.toAABB())
+        for (facing in EnumFacing.values) {
+            if (connectedSides.containsKey(facing)) {
+                if(boundingBoxes[Functions.getIntDirFromDirection(facing)]!!.toAABB().intersectsWith(mask)){
+                    list!!.add(boundingBoxes[Functions.getIntDirFromDirection(facing)]!!.toAABB())
+                }
             }
         }
-        list!!.add(boundingBoxes[6]!!.toAABB())
+        if(boundingBoxes[6]!!.toAABB().intersectsWith(mask)){
+            list!!.add(boundingBoxes[6]!!.toAABB())
+        }
     }
 
+
+
     override fun addSelectionBoxes(list: MutableList<AxisAlignedBB>?) {
-        for(facing in EnumFacing.values){
-            if(connectedSides.containsKey(facing)){
+        for (facing in EnumFacing.values) {
+            if (connectedSides.containsKey(facing)) {
                 list!!.add(boundingBoxes[Functions.getIntDirFromDirection(facing)]!!.toAABB())
             }
         }
@@ -114,36 +116,37 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart {
         return "fluxedredstone:FRPipe"
     }
 
-    fun checkConnections(){
+    fun checkConnections() {
         connectedSides.clear()
-        for(facing in EnumFacing.values){
-            if(shouldConnectTo(pos, facing)){
+        for (facing in EnumFacing.values) {
+            if (shouldConnectTo(pos, facing)) {
                 connectedSides.put(facing, pos)
             }
         }
     }
 
     fun shouldConnectTo(pos: BlockPos?, dir: EnumFacing?): Boolean {
-        for(p in container.parts){
-            if(p != this && p is IOccludingPart){
+        for (p in container.parts) {
+            if (p != this && p is IOccludingPart) {
                 var mask = boundingBoxes[Functions.getIntDirFromDirection(dir)]!!.toAABB()
                 var boxes = ArrayList<AxisAlignedBB>()
-                var part = p as IOccludingPart
+                var part = p
                 part.addOcclusionBoxes(boxes)
-                for(box in boxes){
-                    if(mask.intersectsWith(box)){
+                for (box in boxes) {
+                    if (mask.intersectsWith(box)) {
                         return false;
                     }
                 }
             }
         }
 
-        if(getPipe(world, pos!!, dir) != null){
+        var otherPipe = getPipe(world, pos!!.offset(dir), dir);
+        if (otherPipe != null) {
             return true
         }
 
         var tile = world.getTileEntity(pos.offset(dir))
-        if(tile is IEnergyConnection){
+        if (tile is IEnergyConnection) {
             return true
         }
 
@@ -155,14 +158,14 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart {
 
         if (side != null) {
             val part = container.getPartInSlot(PartSlot.getFaceSlot(side))
-            if (part is IMicroblock.IFaceMicroblock && !(part as IMicroblock.IFaceMicroblock).isFaceHollow()) {
+            if (part is IMicroblock.IFaceMicroblock && !part.isFaceHollow()) {
                 return null
             }
         }
 
         val part = container.getPartInSlot(PartSlot.CENTER)
         if (part is MultipartPipe) {
-            return part as MultipartPipe
+            return part
         } else {
             return null
         }
@@ -176,18 +179,28 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart {
 
     override fun onAdded() {
         super.onAdded()
-    }
-
-    override fun onLoaded() {
-        super.onLoaded()
+        checkConnections()
     }
 
     override fun onNeighborBlockChange(block: Block?) {
         super.onNeighborBlockChange(block)
+        checkConnections()
     }
 
     override fun createBlockState(): BlockState? {
         //return BlockState(MCMultiPartMod.multipart, FluxedRedstone.stateHelper.UP, FluxedRedstone.stateHelper.DOWN, FluxedRedstone.stateHelper.NORTH, FluxedRedstone.stateHelper.EAST, FluxedRedstone.stateHelper.WEST, FluxedRedstone.stateHelper.SOUTH)
         return ExtendedBlockState(MCMultiPartMod.multipart, arrayOfNulls(0), arrayOf(FluxedRedstone.stateHelper.UP, FluxedRedstone.stateHelper.DOWN, FluxedRedstone.stateHelper.NORTH, FluxedRedstone.stateHelper.EAST, FluxedRedstone.stateHelper.WEST, FluxedRedstone.stateHelper.SOUTH))
     }
+
+    override fun update() {
+        if(world != null) {
+            if (world.totalWorldTime % 80 == 0.toLong()) {
+                checkConnections()
+            }
+            if (world.isRemote)
+                return
+        }
+    }
+
+
 }
