@@ -205,32 +205,34 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
                 return
 
             for(face in EnumFacing.values){
-                var offPos = pos.offset(face)
-                var tile = world.getTileEntity(offPos)
-                if(tile is IEnergyConnection){
-                    if(tile is IEnergyProvider){
-                        if(tile.canConnectEnergy(face)){
-                            var move = tile.extractEnergy(face.opposite, Math.min(rfMove, rfStore - power) , false)
-                            if(move != 0){
-                                power += move;
-                                continue
+                if(shouldConnectTo(pos, face)){
+                    var offPos = pos.offset(face)
+                    var tile = world.getTileEntity(offPos)
+                    if(tile is IEnergyConnection){
+                        if(tile is IEnergyProvider){
+                            if(tile.canConnectEnergy(face)){
+                                var move = tile.extractEnergy(face.opposite, Math.min(rfMove, rfStore - power) , false)
+                                if(move != 0){
+                                    power += move;
+                                    continue
+                                }
+                            }
+                        }
+                        if(tile is IEnergyReceiver){
+                            if(tile.canConnectEnergy(face)){
+                                var move = tile.receiveEnergy(face.opposite, Math.min(rfMove, power) , false)
+                                if(move != 0){
+                                    power -= move;
+                                }
                             }
                         }
                     }
-                    if(tile is IEnergyReceiver){
-                        if(tile.canConnectEnergy(face)){
-                            var move = tile.receiveEnergy(face.opposite, Math.min(rfMove, power) , false)
-                            if(move != 0){
-                                power -= move;
-                            }
-                        }
+                    var pipe = getPipe(world, pos.offset(face), face)
+                    if(pipe != null){
+                        var averPower = (power + pipe.power) / 2
+                        pipe.power = averPower
+                        power = averPower
                     }
-                }
-                var pipe = getPipe(world, pos.offset(face), face)
-                if(pipe != null){
-                    var averPower = (power + pipe.power) / 2
-                    pipe.power = averPower
-                    power = averPower
                 }
             }
         }
