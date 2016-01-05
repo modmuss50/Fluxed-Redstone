@@ -3,20 +3,16 @@ package me.modmuss50.fr.tile
 import cofh.api.energy.IEnergyConnection
 import cofh.api.energy.IEnergyProvider
 import cofh.api.energy.IEnergyReceiver
-import me.modmuss50.fr.api.ICap
-import me.modmuss50.fr.block.BlockPipe
 import me.modmuss50.fr.powernet.PowerNetwork
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ITickable
 import net.minecraft.world.World
-import java.util.*
 
 class TilePipe : TileEntity(), ITickable {
 
     public var powerNetwork = PowerNetwork(false)
-    public var capMap = HashMap<EnumFacing, ICap>()
 
     init {
     }
@@ -28,26 +24,26 @@ class TilePipe : TileEntity(), ITickable {
         if (powerNetwork == null || !powerNetwork.isValid) {
             findAndJoinNetwork(worldObj, getPos().x, getPos().y, getPos().z)
         } else {
-            val block = worldObj.getBlockState(pos).block as BlockPipe
-            for(face in capMap.keys.toArrayList()){
-                val RFTick = capMap.get(face)!!.getType().maxRF
-                var tile = world.getTileEntity(pos.offset(face))
-                if (tile is IEnergyConnection) {
-                    if(tile.canConnectEnergy(face)){
-                        if (tile is IEnergyProvider) {
-                            var insert = tile.extractEnergy(face, Math.min(RFTick, powerNetwork.pipes.size * powerNetwork.RFPerPipe), false)
-                            powerNetwork.networkRF += insert
-                        }
-                        if (powerNetwork.networkRF > 0) {
-                            if (tile is IEnergyReceiver) {
-                                var extract = tile.receiveEnergy(face, Math.min(RFTick, (powerNetwork.pipes.size * powerNetwork.RFPerPipe) - powerNetwork.networkRF), false)
-                                powerNetwork.networkRF -= extract
+            for(face in EnumFacing.values){
+                if(connects(face)){
+                    val RFTick = 128
+                    var tile = world.getTileEntity(pos.offset(face))
+                    if (tile is IEnergyConnection) {
+                        if(tile.canConnectEnergy(face)){
+                            if (tile is IEnergyProvider) {
+                                var insert = tile.extractEnergy(face, Math.min(RFTick, powerNetwork.pipes.size * powerNetwork.RFPerPipe), false)
+                                powerNetwork.networkRF += insert
+                            }
+                            if (powerNetwork.networkRF > 0) {
+                                if (tile is IEnergyReceiver) {
+                                    var extract = tile.receiveEnergy(face, Math.min(RFTick, (powerNetwork.pipes.size * powerNetwork.RFPerPipe) - powerNetwork.networkRF), false)
+                                    powerNetwork.networkRF -= extract
+                                }
                             }
                         }
+
                     }
-
                 }
-
             }
         }
     }
@@ -55,13 +51,7 @@ class TilePipe : TileEntity(), ITickable {
     fun connects(facing: EnumFacing): Boolean {
         val newPos = getPos().add(facing.frontOffsetX, facing.frontOffsetY, facing.frontOffsetZ)
         val entity = worldObj.getTileEntity(newPos)
-        if (entity is TilePipe) {
-            val tilePipe = entity
-            if (!hasCap(facing) && !tilePipe.hasCap(facing.opposite)) {
-                return true
-            }
-        }
-        return false
+        return entity is IEnergyConnection || entity is TilePipe;
     }
 
     fun findAndJoinNetwork(world: World, x: Int, y: Int, z: Int) {
@@ -99,38 +89,6 @@ class TilePipe : TileEntity(), ITickable {
         this.removeFromNetwork()
         this.resetNetwork()
         this.findAndJoinNetwork(worldObj, getPos().x, getPos().y, getPos().z)
-    }
-
-    fun addCap(side: EnumFacing, cap: ICap): Boolean {
-        if (capMap.containsKey(side)) {
-            return false
-        }
-        capMap.put(side, cap)
-        worldObj.markBlockForUpdate(pos)
-        worldObj.markBlockRangeForRenderUpdate(pos, pos)
-        return true
-    }
-
-    fun getCapForSide(side: EnumFacing): ICap? {
-        if (capMap.contains(side)) {
-            return capMap.get(side)
-        } else {
-            return null
-        }
-    }
-
-    fun hasCap(side: EnumFacing): Boolean {
-        return capMap.containsKey(side)
-    }
-
-    fun removeCap(side: EnumFacing): Boolean {
-        if (hasCap(side)) {
-            capMap.remove(side)
-            worldObj.markBlockForUpdate(pos)
-            worldObj.markBlockRangeForRenderUpdate(pos, pos)
-            return true
-        }
-        return false
     }
 
 }

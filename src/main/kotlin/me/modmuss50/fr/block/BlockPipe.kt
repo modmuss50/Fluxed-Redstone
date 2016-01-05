@@ -1,7 +1,6 @@
 package me.modmuss50.fr.block
 
 import me.modmuss50.fr.WorldState
-import me.modmuss50.fr.caps.TestCap
 import me.modmuss50.fr.raytrace.RayTracer
 import me.modmuss50.fr.tile.TilePipe
 import net.minecraft.block.BlockContainer
@@ -11,7 +10,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.Items
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.*
 import net.minecraft.world.IBlockAccess
@@ -32,23 +30,9 @@ class BlockPipe : BlockContainer(Material.iron) {
 
     override fun onBlockActivated(worldIn: World?, pos: BlockPos?, state: IBlockState?, playerIn: EntityPlayer?, side: EnumFacing?, hitX: Float, hitY: Float, hitZ: Float): Boolean {
         var pipe = worldIn!!.getTileEntity(pos) as TilePipe;
-        if(playerIn!!.heldItem != null && playerIn.heldItem.item == Items.apple){
-            var tracer = RayTracer()
-            var result = tracer.getCollision(worldIn, pos!!, playerIn, getAxisis(worldIn, pos)!!)
-            if(result.valid()){
-                var cap = getCap(result.box!!)
-                if(cap != null){
-                    return pipe.removeCap(cap)
-                }
-            }
-            if(!pipe.hasCap(side!!)){
-                return pipe.addCap(side, TestCap())
-            } else {
-                return pipe.removeCap(side)
-            }
-        }
-        if(!worldIn.isRemote && playerIn.heldItem == null )
-            playerIn.addChatComponentMessage(ChatComponentText("${EnumChatFormatting.BLUE}${pipe.powerNetwork.pipes.size}${EnumChatFormatting.GRAY} connected pipes that are storing ${EnumChatFormatting.GREEN}${pipe.powerNetwork.networkRF} RF"))
+
+        if(!worldIn.isRemote)
+            playerIn?.addChatComponentMessage(ChatComponentText("${EnumChatFormatting.BLUE}${pipe.powerNetwork.pipes.size}${EnumChatFormatting.GRAY} connected pipes that are storing ${EnumChatFormatting.GREEN}${pipe.powerNetwork.networkRF} RF"))
         return super.onBlockActivated(worldIn, pos, state, playerIn, side, hitX, hitY, hitZ)
     }
 
@@ -99,52 +83,28 @@ class BlockPipe : BlockContainer(Material.iron) {
             var pipe = worldIn.getTileEntity(pos) as TilePipe
             list.add(Vecs3dCube(0.25, 0.25, 0.25, 0.75, 0.75, 0.75).toAABB())
 
-            if (pipe.connects(EnumFacing.UP) || pipe.hasCap(EnumFacing.UP)) {
+            if (pipe.connects(EnumFacing.UP)) {
                 list.add(Vecs3dCube(4.0/16, 12.0/16, 4.0/16, 12.0/16, 16.0/16, 12.0 /16).toAABB())
             }
-            if (pipe.connects(EnumFacing.DOWN) || pipe.hasCap(EnumFacing.DOWN)) {
+            if (pipe.connects(EnumFacing.DOWN)) {
                 list.add(Vecs3dCube(4.0/16, 0.0/16, 4.0/16, 12.0/16, 4.0/16, 12.0 /16).toAABB())
             }
-            if (pipe.connects(EnumFacing.NORTH) || pipe.hasCap(EnumFacing.NORTH)) {
+            if (pipe.connects(EnumFacing.NORTH)) {
                 list.add(Vecs3dCube(4.0/16, 4.0/16, 4.0/16, 12.0/16, 12.0/16, 0.0 /16).toAABB())
             }
-            if (pipe.connects(EnumFacing.SOUTH) || pipe.hasCap(EnumFacing.SOUTH)) {
+            if (pipe.connects(EnumFacing.SOUTH)) {
                 list.add(Vecs3dCube(4.0/16, 4.0/16, 12.0/16, 12.0/16, 12.0/16, 16.0 /16).toAABB())
             }
-            if (pipe.connects(EnumFacing.EAST) || pipe.hasCap(EnumFacing.EAST)) {
+            if (pipe.connects(EnumFacing.EAST)) {
                 list.add(Vecs3dCube(12.0/16, 4.0/16, 4.0/16, 16.0/16, 12.0/16, 12.0 /16).toAABB())
             }
-            if (pipe.connects(EnumFacing.WEST) || pipe.hasCap(EnumFacing.WEST)) {
+            if (pipe.connects(EnumFacing.WEST)) {
                 list.add(Vecs3dCube(4.0/16, 4.0/16, 4.0/16, 0.0/16, 12.0/16, 12.0 /16).toAABB())
             }
         }
         return list
     }
 
-
-    //TODO recode this horrible code
-    fun getCap(axisAlignedBB: AxisAlignedBB) :EnumFacing?{
-        if(equals(Vecs3dCube(4.0/16, 12.0/16, 4.0/16, 12.0/16, 16.0/16, 12.0 /16).toAABB(), axisAlignedBB)){
-            return EnumFacing.UP
-        }
-        if(equals(Vecs3dCube(4.0/16, 0.0/16, 4.0/16, 12.0/16, 4.0/16, 12.0 /16).toAABB(), axisAlignedBB)){
-            return EnumFacing.DOWN
-        }
-        if(equals(Vecs3dCube(4.0/16, 4.0/16, 4.0/16, 12.0/16, 12.0/16, 0.0 /16).toAABB(), axisAlignedBB)){
-            return EnumFacing.NORTH
-        }
-        if(equals(Vecs3dCube(4.0/16, 4.0/16, 12.0/16, 12.0/16, 12.0/16, 16.0 /16).toAABB(), axisAlignedBB)){
-            return EnumFacing.SOUTH
-        }
-        if(equals(Vecs3dCube(12.0/16, 4.0/16, 4.0/16, 16.0/16, 12.0/16, 12.0 /16).toAABB(), axisAlignedBB)){
-            return EnumFacing.EAST
-        }
-        if(equals(Vecs3dCube(4.0/16, 4.0/16, 4.0/16, 0.0/16, 12.0/16, 12.0 /16).toAABB(), axisAlignedBB)){
-            return EnumFacing.WEST
-        }
-
-        return null
-    }
 
     fun equals(a: AxisAlignedBB, b: AxisAlignedBB) : Boolean{
         return a.maxX.equals(b.maxX) && a.maxY.equals(b.maxY) && a.maxZ.equals(b.maxZ) && a.minX.equals(b.minX) && a.minY.equals(b.minY) && a.minZ.equals(b.minZ)

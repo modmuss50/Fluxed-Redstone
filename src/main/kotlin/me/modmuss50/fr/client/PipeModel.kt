@@ -73,25 +73,6 @@ class PipeModel : ISmartBlockModel {
             if (pipe.connects(EnumFacing.WEST)) {
                 addCubeToList(Vecs3dCube(0.0, 4.0, 4.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
             }
-
-            if (pipe.hasCap(EnumFacing.UP)) {
-                addCubeToList(Vecs3dCube(4.0, 12.0, 4.0, 12.0, 16.0, 12.0), list, face, ModelRotation.X0_Y0, capTexture!!)
-            }
-            if (pipe.hasCap(EnumFacing.DOWN)) {
-                addCubeToList(Vecs3dCube(4.0, 0.0, 4.0, 12.0, 4.0, 12.0), list, face, ModelRotation.X0_Y0, capTexture!!)
-            }
-            if (pipe.hasCap(EnumFacing.NORTH)) {
-                addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 12.0, 12.0, 0.0), list, face, ModelRotation.X0_Y0, capTexture!!)
-            }
-            if (pipe.hasCap(EnumFacing.SOUTH)) {
-                addCubeToList(Vecs3dCube(4.0, 4.0, 12.0, 12.0, 12.0, 16.0), list, face, ModelRotation.X0_Y0, capTexture!!)
-            }
-            if (pipe.hasCap(EnumFacing.EAST)) {
-                addCubeToList(Vecs3dCube(12.0, 4.0, 4.0, 16.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0, capTexture!!)
-            }
-            if (pipe.hasCap(EnumFacing.WEST)) {
-                addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 0.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0, capTexture!!)
-            }
         }
 
         return list
