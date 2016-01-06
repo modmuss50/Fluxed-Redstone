@@ -1,6 +1,8 @@
 package me.modmuss50.fr.mutlipart
 
+import me.modmuss50.fr.PipeTypeEnum
 import net.minecraft.block.properties.PropertyBool
+import net.minecraft.block.properties.PropertyEnum
 import net.minecraftforge.common.property.Properties
 
 /**
@@ -13,4 +15,6 @@ class PipeStateHelper {
     val EAST = Properties.toUnlisted(PropertyBool.create("east"))
     val SOUTH = Properties.toUnlisted(PropertyBool.create("south"))
     val WEST = Properties.toUnlisted(PropertyBool.create("west"))
+
+    var typeProp = PropertyEnum.create("variant", PipeTypeEnum::class.java)
 }

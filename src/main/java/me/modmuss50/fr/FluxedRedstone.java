@@ -11,21 +11,32 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import reborncore.api.TextureRegistry;
+
+import java.util.HashMap;
 
 @Mod(modid = "fluxedredstone", name = "FluxedRedstone", version = "@MODVERSION@")
 public class FluxedRedstone {
 
-    public static Item itemMultiPipe;
+    public static HashMap<PipeTypeEnum, Item> itemMultiPipe = new HashMap<>();
+
     public static PipeStateHelper stateHelper = new PipeStateHelper();
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
 
-        MultipartRegistry.registerPart(MultipartPipe.class, "fluxedredstone:fluxedPipe");
-        itemMultiPipe = new ItemMultipartPipe().setCreativeTab(CreativeTabs.tabRedstone).setUnlocalizedName("fluxedredstone.itemFluxedPipe");
-        GameRegistry.registerItem(itemMultiPipe, "itemFluxedPipe");
+
+        for(PipeTypeEnum typeEnum : PipeTypeEnum.values()){
+            MultipartRegistry.registerPart(typeEnum.getClassType(), "fluxedredstone:fluxedPipe." + typeEnum.getFriendlyName());
+            itemMultiPipe.put(typeEnum, new ItemMultipartPipe(typeEnum).setCreativeTab(CreativeTabs.tabRedstone).setUnlocalizedName("fluxedredstone.itemFluxedPipe." + typeEnum.getFriendlyName()));
+            GameRegistry.registerItem(itemMultiPipe.get(typeEnum), "itemFluxedPipe." + typeEnum.getFriendlyName());
+            TextureRegistry.registerItem(itemMultiPipe.get(typeEnum));
+        }
+
 
         MinecraftForge.EVENT_BUS.register(new PipeModelBakery());
     }
+
+
 
 }

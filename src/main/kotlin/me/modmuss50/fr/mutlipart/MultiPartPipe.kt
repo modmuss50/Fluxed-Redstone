@@ -7,10 +7,12 @@ import mcmultipart.MCMultiPartMod
 import mcmultipart.microblock.IMicroblock
 import mcmultipart.multipart.*
 import me.modmuss50.fr.FluxedRedstone
+import me.modmuss50.fr.PipeTypeEnum
 import net.minecraft.block.Block
 import net.minecraft.block.state.BlockState
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.*
 import net.minecraft.world.World
 import net.minecraftforge.common.property.ExtendedBlockState
@@ -19,13 +21,14 @@ import reborncore.common.misc.Functions
 import reborncore.common.misc.vecmath.Vecs3dCube
 import java.util.*
 
-/**
- * Created by mark on 05/01/2016.
- */
-class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
+open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
 
     override fun getSlotMask(): EnumSet<PartSlot>? {
         return EnumSet.of(PartSlot.CENTER);
+    }
+
+    open fun getPipeType() : PipeTypeEnum{
+        return PipeTypeEnum.REDSTONE
     }
 
     var boundingBoxes = arrayOfNulls<Vecs3dCube>(14)
@@ -36,8 +39,6 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
     var connectedSides = HashMap<EnumFacing, BlockPos>()
 
     var power = 0;
-    var rfMove = 320;
-    var rfStore = 1000;
 
     init {
         refreshBounding()
@@ -45,7 +46,7 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
 
     fun refreshBounding() {
         val centerFirst = (center - offset).toDouble()
-        val w = 0.25F
+        val w =  (getPipeType().thickness / 16) - 0.5
         boundingBoxes[6] = Vecs3dCube(centerFirst.toDouble() - w - 0.03, centerFirst.toDouble() - w - 0.08, centerFirst.toDouble() - w - 0.03, centerFirst.toDouble() + w + 0.08,
                 centerFirst.toDouble() + w + 0.04, centerFirst.toDouble() + w + 0.08)
 
@@ -178,7 +179,7 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
     override fun getExtendedState(state: IBlockState?): IBlockState? {
         var extState = state as IExtendedBlockState;
 
-        return extState.withProperty(FluxedRedstone.stateHelper.UP, shouldConnectTo(pos, EnumFacing.UP))!!.withProperty(FluxedRedstone.stateHelper.DOWN, shouldConnectTo(pos, EnumFacing.DOWN))!!.withProperty(FluxedRedstone.stateHelper.NORTH, shouldConnectTo(pos, EnumFacing.NORTH))!!.withProperty(FluxedRedstone.stateHelper.EAST, shouldConnectTo(pos, EnumFacing.EAST))!!.withProperty(FluxedRedstone.stateHelper.WEST, shouldConnectTo(pos, EnumFacing.WEST))!!.withProperty(FluxedRedstone.stateHelper.SOUTH, shouldConnectTo(pos, EnumFacing.SOUTH))
+        return extState.withProperty(FluxedRedstone.stateHelper.UP, shouldConnectTo(pos, EnumFacing.UP))!!.withProperty(FluxedRedstone.stateHelper.DOWN, shouldConnectTo(pos, EnumFacing.DOWN))!!.withProperty(FluxedRedstone.stateHelper.NORTH, shouldConnectTo(pos, EnumFacing.NORTH))!!.withProperty(FluxedRedstone.stateHelper.EAST, shouldConnectTo(pos, EnumFacing.EAST))!!.withProperty(FluxedRedstone.stateHelper.WEST, shouldConnectTo(pos, EnumFacing.WEST))!!.withProperty(FluxedRedstone.stateHelper.SOUTH, shouldConnectTo(pos, EnumFacing.SOUTH)).withProperty(FluxedRedstone.stateHelper.typeProp, getPipeType())
     }
 
     override fun onAdded() {
@@ -193,7 +194,7 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
 
     override fun createBlockState(): BlockState? {
         //return BlockState(MCMultiPartMod.multipart, FluxedRedstone.stateHelper.UP, FluxedRedstone.stateHelper.DOWN, FluxedRedstone.stateHelper.NORTH, FluxedRedstone.stateHelper.EAST, FluxedRedstone.stateHelper.WEST, FluxedRedstone.stateHelper.SOUTH)
-        return ExtendedBlockState(MCMultiPartMod.multipart, arrayOfNulls(0), arrayOf(FluxedRedstone.stateHelper.UP, FluxedRedstone.stateHelper.DOWN, FluxedRedstone.stateHelper.NORTH, FluxedRedstone.stateHelper.EAST, FluxedRedstone.stateHelper.WEST, FluxedRedstone.stateHelper.SOUTH))
+        return ExtendedBlockState(MCMultiPartMod.multipart, arrayOf(FluxedRedstone.stateHelper.typeProp), arrayOf(FluxedRedstone.stateHelper.UP, FluxedRedstone.stateHelper.DOWN, FluxedRedstone.stateHelper.NORTH, FluxedRedstone.stateHelper.EAST, FluxedRedstone.stateHelper.WEST, FluxedRedstone.stateHelper.SOUTH))
     }
 
     override fun update() {
@@ -211,7 +212,7 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
                     if(tile is IEnergyConnection){
                         if(tile is IEnergyProvider){
                             if(tile.canConnectEnergy(face)){
-                                var move = tile.extractEnergy(face.opposite, Math.min(rfMove, rfStore - power) , false)
+                                var move = tile.extractEnergy(face.opposite, Math.min(getPipeType().maxRF, getPipeType().maxRF * 4 - power) , false)
                                 if(move != 0){
                                     power += move;
                                     continue
@@ -220,7 +221,7 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
                         }
                         if(tile is IEnergyReceiver){
                             if(tile.canConnectEnergy(face)){
-                                var move = tile.receiveEnergy(face.opposite, Math.min(rfMove, power) , false)
+                                var move = tile.receiveEnergy(face.opposite, Math.min(getPipeType().maxRF, power) , false)
                                 if(move != 0){
                                     power -= move;
                                 }
@@ -239,4 +240,13 @@ class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
     }
 
 
+    override fun writeToNBT(tag: NBTTagCompound?) {
+        super.writeToNBT(tag)
+        tag!!.setInteger("power", power)
+    }
+
+    override fun readFromNBT(tag: NBTTagCompound?) {
+        super.readFromNBT(tag)
+        power = tag!!.getInteger("power")
+    }
 }
