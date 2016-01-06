@@ -2,6 +2,7 @@ package me.modmuss50.fr.client
 
 import mcmultipart.client.multipart.ISmartMultipartModel
 import me.modmuss50.fr.FluxedRedstone
+import me.modmuss50.fr.PipeTypeEnum
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.*
@@ -16,29 +17,24 @@ import reborncore.common.misc.vecmath.Vecs3dCube
 import java.util.*
 
 
-class PipeModel : ISmartMultipartModel {
+class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel {
 
     internal var faceBakery = FaceBakery()
     internal var texture: TextureAtlasSprite? = null
-    internal var capTexture: TextureAtlasSprite? = null
 
     var state: IExtendedBlockState? = null
 
     init {
-        texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite("fluxedredstone:blocks/cable")
-        capTexture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite("fluxedredstone:blocks/cap")
+        texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite(type.textureName)
     }
 
-    constructor(state: IExtendedBlockState) {
+    constructor(state: IExtendedBlockState, PType : PipeTypeEnum) : this(PType) {
         this.state = state
     }
 
-    constructor() {
-
-    }
 
     override fun handlePartState(partSate: IBlockState?): IBakedModel? {
-        return PipeModel(partSate as IExtendedBlockState)
+        return PipeModel(partSate as IExtendedBlockState, type)
     }
 
     override fun getFaceQuads(p_177551_1_: EnumFacing): List<BakedQuad> {
@@ -49,8 +45,8 @@ class PipeModel : ISmartMultipartModel {
         val list = ArrayList<BakedQuad>()
         val uv = BlockFaceUV(floatArrayOf(0.0f, 0.0f, 16.0f, 16.0f), 0)
         val face = BlockPartFace(null, 0, "", uv)
-        val thickness = 6.0
-        val lastThickness = 16 - 6.0
+        val thickness = type.thickness
+        val lastThickness = 16 - type.thickness
         addCubeToList(Vecs3dCube(thickness, thickness, thickness, lastThickness, lastThickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
         if(state != null){
             if (state!!.getValue(FluxedRedstone.stateHelper.UP)) {

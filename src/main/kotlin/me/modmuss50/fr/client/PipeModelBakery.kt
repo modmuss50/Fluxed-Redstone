@@ -1,5 +1,6 @@
 package me.modmuss50.fr.client
 
+import me.modmuss50.fr.PipeTypeEnum
 import net.minecraft.client.resources.model.ModelResourceLocation
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.ModelBakeEvent
@@ -10,13 +11,16 @@ class PipeModelBakery {
 
     @SubscribeEvent
     fun onBakeModel(event: ModelBakeEvent) {
-        event.modelRegistry.putObject(ModelResourceLocation("fluxedredstone:FRPipe#multipart"), PipeModel())
-
+        for(type in PipeTypeEnum.values){
+            event.modelRegistry.putObject(ModelResourceLocation("fluxedredstone:FRPipe#variant=" + type.friendlyName.toLowerCase()), PipeModel(type))
+        }
     }
 
     @SubscribeEvent
     fun onStitch(event: TextureStitchEvent.Pre) {
-        event.map.registerSprite(ResourceLocation("fluxedredstone:blocks/cable"))
+        for(type in PipeTypeEnum.values){
+            event.map.registerSprite(ResourceLocation(type.textureName))
+        }
     }
 
 }
