@@ -49,25 +49,27 @@ class PipeModel : ISmartMultipartModel {
         val list = ArrayList<BakedQuad>()
         val uv = BlockFaceUV(floatArrayOf(0.0f, 0.0f, 16.0f, 16.0f), 0)
         val face = BlockPartFace(null, 0, "", uv)
-        addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
-        if (state != null) {
+        val thickness = 6.0
+        val lastThickness = 16 - 6.0
+        addCubeToList(Vecs3dCube(thickness, thickness, thickness, lastThickness, lastThickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
+        if(state != null){
             if (state!!.getValue(FluxedRedstone.stateHelper.UP)) {
-                addCubeToList(Vecs3dCube(4.0, 12.0, 4.0, 12.0, 16.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
+                addCubeToList(Vecs3dCube(thickness, lastThickness, thickness, lastThickness, 16.0, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
             }
             if (state!!.getValue(FluxedRedstone.stateHelper.DOWN)) {
-                addCubeToList(Vecs3dCube(4.0, 0.0, 4.0, 12.0, 4.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
+                addCubeToList(Vecs3dCube(thickness, 0.0, thickness, lastThickness, thickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
             }
             if (state!!.getValue(FluxedRedstone.stateHelper.NORTH)) {
-                addCubeToList(Vecs3dCube(4.0, 4.0, 0.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
+                addCubeToList(Vecs3dCube(thickness, thickness, 0.0, lastThickness, lastThickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
             }
             if (state!!.getValue(FluxedRedstone.stateHelper.SOUTH)) {
-                addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 12.0, 12.0, 16.0), list, face, ModelRotation.X0_Y0, texture!!)
+                addCubeToList(Vecs3dCube(thickness, thickness, thickness, lastThickness, lastThickness, 16.0), list, face, ModelRotation.X0_Y0, texture!!)
             }
             if (state!!.getValue(FluxedRedstone.stateHelper.EAST)) {
-                addCubeToList(Vecs3dCube(4.0, 4.0, 4.0, 16.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
+                addCubeToList(Vecs3dCube(thickness, thickness, thickness, 16.0, lastThickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
             }
             if (state!!.getValue(FluxedRedstone.stateHelper.WEST)) {
-                addCubeToList(Vecs3dCube(0.0, 4.0, 4.0, 12.0, 12.0, 12.0), list, face, ModelRotation.X0_Y0, texture!!)
+                addCubeToList(Vecs3dCube(0.0, thickness, thickness, lastThickness, lastThickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
             }
         }
 
