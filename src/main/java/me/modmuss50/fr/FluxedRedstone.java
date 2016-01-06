@@ -11,6 +11,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import reborncore.api.TextureRegistry;
 
 import java.util.HashMap;
 
@@ -29,6 +30,7 @@ public class FluxedRedstone {
             MultipartRegistry.registerPart(typeEnum.getClassType(), "fluxedredstone:fluxedPipe." + typeEnum.getFriendlyName());
             itemMultiPipe.put(typeEnum, new ItemMultipartPipe(typeEnum).setCreativeTab(CreativeTabs.tabRedstone).setUnlocalizedName("fluxedredstone.itemFluxedPipe." + typeEnum.getFriendlyName()));
             GameRegistry.registerItem(itemMultiPipe.get(typeEnum), "itemFluxedPipe." + typeEnum.getFriendlyName());
+            TextureRegistry.registerItem(itemMultiPipe.get(typeEnum));
         }
 
 

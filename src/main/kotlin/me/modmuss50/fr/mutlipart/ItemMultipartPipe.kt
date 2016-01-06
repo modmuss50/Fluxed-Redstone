@@ -9,8 +9,21 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import net.minecraft.world.World
+import reborncore.api.IItemTexture
 
-class ItemMultipartPipe(val type : PipeTypeEnum) : ItemMultiPart() {
+class ItemMultipartPipe(val type : PipeTypeEnum) : ItemMultiPart() , IItemTexture {
+
+    override fun getMaxMeta(): Int {
+        return 1
+    }
+
+    override fun getModID(): String? {
+        return "fluxedredstone"
+    }
+
+    override fun getTextureName(damage: Int): String? {
+        return type.textureName.replace("blocks", "items")
+    }
 
     override fun createPart(p0: World?, p1: BlockPos?, p2: EnumFacing?, p3: Vec3?, p4: ItemStack?, p5: EntityPlayer?): IMultipart? {
         return type.classType.newInstance()
