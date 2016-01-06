@@ -140,6 +140,15 @@ uploadArchives {
 task deobfJar(type: Jar) {
     from sourceSets.main.output
     classifier = 'dev'
+	configurations.shade.each { dep ->
+        from(project.zipTree(dep)) {
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
+    manifest {
+        attributes 'FMLCorePlugin': 'io.drakon.forgelinFR.CorePlugin'
+        attributes 'FMLCorePluginContainsFMLMod': 'true'
+    }
 }
 
 artifacts {
