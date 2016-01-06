@@ -1,4 +1,5 @@
-tile.FRPipeSTONE.name=Stone flux duct
-tile.FRPipeIRON.name=Iron flux duct
-tile.FRPipeGOLD.name=Gold flux duct
-tile.FRPipeDIAMOND.name=Diamond flux duct
+itemGroup.fluxedredstone=Fluxed Redstone
+item.fluxedredstone.itemFluxedPipe.Redstone.name=Redstone Fluxed Wire
+item.fluxedredstone.itemFluxedPipe.Gold.name=Gold Fluxed Wire
+item.fluxedredstone.itemFluxedPipe.Blaze.name=Blaze Fluxed Wire
+item.fluxedredstone.itemFluxedPipe.Ender.name=Ender Fluxed Wire

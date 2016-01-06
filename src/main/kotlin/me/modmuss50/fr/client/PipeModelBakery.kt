@@ -6,19 +6,20 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.ModelBakeEvent
 import net.minecraftforge.client.event.TextureStitchEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.text.toLowerCase
 
 class PipeModelBakery {
 
     @SubscribeEvent
     fun onBakeModel(event: ModelBakeEvent) {
-        for(type in PipeTypeEnum.values){
+        for(type in PipeTypeEnum.values()){
             event.modelRegistry.putObject(ModelResourceLocation("fluxedredstone:FRPipe#variant=" + type.friendlyName.toLowerCase()), PipeModel(type))
         }
     }
 
     @SubscribeEvent
     fun onStitch(event: TextureStitchEvent.Pre) {
-        for(type in PipeTypeEnum.values){
+        for(type in PipeTypeEnum.values()){
             event.map.registerSprite(ResourceLocation(type.textureName))
         }
     }

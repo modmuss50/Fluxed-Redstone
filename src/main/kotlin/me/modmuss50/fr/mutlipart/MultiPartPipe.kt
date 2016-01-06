@@ -6,12 +6,15 @@ import cofh.api.energy.IEnergyReceiver
 import mcmultipart.MCMultiPartMod
 import mcmultipart.microblock.IMicroblock
 import mcmultipart.multipart.*
+import mcmultipart.raytrace.PartMOP
 import me.modmuss50.fr.FluxedRedstone
 import me.modmuss50.fr.PipeTypeEnum
 import net.minecraft.block.Block
 import net.minecraft.block.state.BlockState
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.*
 import net.minecraft.world.World
@@ -54,7 +57,7 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
                 centerFirst - w, centerFirst + w, centerFirst + w, centerFirst + w)
 
         var i = 0
-        for (dir in EnumFacing.values) {
+        for (dir in EnumFacing.values()) {
             val xMin1 = (if (dir.frontOffsetX < 0)
                 0.0
             else
@@ -248,5 +251,9 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
     override fun readFromNBT(tag: NBTTagCompound?) {
         super.readFromNBT(tag)
         power = tag!!.getInteger("power")
+    }
+
+    override fun getPickBlock(player: EntityPlayer?, hit: PartMOP?): ItemStack? {
+        return ItemStack(FluxedRedstone.itemMultiPipe.get(getPipeType()))
     }
 }
