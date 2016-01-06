@@ -137,6 +137,17 @@ uploadArchives {
     }
 }
 
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'dev'
+}
+
+artifacts {
+    archives deobfJar
+}
+
+build.dependsOn deobfJar
+
 task wrapper(type: Wrapper) {
     //To update the wrapper change the version bellow then run: gradle wrapper
     gradleVersion = '2.9'
