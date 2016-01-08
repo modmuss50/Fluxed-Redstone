@@ -134,18 +134,15 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
     }
 
     fun shouldConnectTo(pos: BlockPos?, dir: EnumFacing?): Boolean {
-        for (p in container.parts) {
-            if (p != this && p is IOccludingPart) {
-                var mask = boundingBoxes[Functions.getIntDirFromDirection(dir)]!!.toAABB()
-                var boxes = ArrayList<AxisAlignedBB>()
-                var part = p
-                part.addOcclusionBoxes(boxes)
-                for (box in boxes) {
-                    if (mask.intersectsWith(box)) {
-                        return false;
-                    }
-                }
+        var part = container.getPartInSlot(PartSlot.getFaceSlot(dir))
+        if(part is IMicroblock.IFaceMicroblock){
+            if(!part.isFaceHollow){
+                return false
             }
+        }
+
+        if (!OcclusionHelper.occlusionTest(container.parts, this, boundingBoxes[Functions.getIntDirFromDirection(dir)]!!.toAABB())) {
+            return false;
         }
 
         var otherPipe = getPipe(world, pos!!.offset(dir), dir);
