@@ -256,4 +256,10 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
     override fun getPickBlock(player: EntityPlayer?, hit: PartMOP?): ItemStack? {
         return ItemStack(FluxedRedstone.itemMultiPipe.get(getPipeType()))
     }
+
+    override fun getDrops(): MutableList<ItemStack>? {
+        var list = ArrayList<ItemStack>()
+        list.add(ItemStack(FluxedRedstone.itemMultiPipe.get(getPipeType())))
+        return list
+    }
 }
