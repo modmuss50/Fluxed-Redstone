@@ -134,6 +134,19 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
     }
 
     fun shouldConnectTo(pos: BlockPos?, dir: EnumFacing?): Boolean {
+        if(dir != null){
+            if(internalShouldConnectTo(pos, dir)){
+                var otherPipe = getPipe(world, pos!!.offset(dir), dir);
+                if(otherPipe != null && !otherPipe!!.internalShouldConnectTo(otherPipe!!.pos, dir.opposite)){
+                    return false
+                }
+                return true
+            }
+        }
+        return false
+    }
+
+    fun internalShouldConnectTo(pos: BlockPos?, dir: EnumFacing?): Boolean {
         var part = container.getPartInSlot(PartSlot.getFaceSlot(dir))
         if(part is IMicroblock.IFaceMicroblock){
             if(!part.isFaceHollow){
