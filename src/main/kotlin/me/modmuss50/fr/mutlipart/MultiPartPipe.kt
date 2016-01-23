@@ -148,7 +148,7 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
 
     fun internalShouldConnectTo(pos: BlockPos?, dir: EnumFacing?): Boolean {
         var part = container.getPartInSlot(PartSlot.getFaceSlot(dir))
-        if(part is IMicroblock.IFaceMicroblock){
+        if(part != null && part is IMicroblock.IFaceMicroblock){
             if(!part.isFaceHollow){
                 return false
             }
