@@ -40,11 +40,11 @@ repositories {
 	}
 }
 
+version = "1.1.0"
+
 def ENV = System.getenv()
 if (ENV.BUILD_NUMBER) {
-    version = "1.0.1." + "${System.getenv().BUILD_NUMBER}"
-} else {
-    version = "1.0.1.BUILD"
+    version = version + "." + "${System.getenv().BUILD_NUMBER}"
 }
 
 minecraft {
