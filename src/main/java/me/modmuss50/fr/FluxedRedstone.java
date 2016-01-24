@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import reborncore.api.TextureRegistry;
+import reborncore.RebornCore;
 import reborncore.common.util.CraftingHelper;
 
 import java.util.HashMap;
@@ -40,7 +40,7 @@ public class FluxedRedstone {
             MultipartRegistry.registerPart(typeEnum.getClassType(), "fluxedredstone:fluxedPipe." + typeEnum.getFriendlyName());
             itemMultiPipe.put(typeEnum, new ItemMultipartPipe(typeEnum).setCreativeTab(creativeTab).setUnlocalizedName("fluxedredstone.itemFluxedPipe." + typeEnum.getFriendlyName()));
             GameRegistry.registerItem(itemMultiPipe.get(typeEnum), "itemFluxedPipe." + typeEnum.getFriendlyName());
-            TextureRegistry.registerItem(itemMultiPipe.get(typeEnum));
+            RebornCore.jsonDestroyer.registerObject(itemMultiPipe.get(typeEnum));
         }
 
         if(FMLCommonHandler.instance().getSide() == Side.CLIENT){ //Lazy man's proxy
