@@ -17,6 +17,7 @@ public enum PipeTypeEnum implements IStringSerializable {
 	ENDER(128 * 8 * 8 * 8, "Ender", "fluxedredstone:blocks/cable_ender", 5.0, EnderPipe.class);
 
 	private int maxRF;
+	private int defualtRF;
 	private String friendlyName;
 	private String textureName;
 	private Double thickness;
@@ -28,6 +29,7 @@ public enum PipeTypeEnum implements IStringSerializable {
 		this.textureName = textureName;
 		this.thickness = thickness;
 		this.classType = multipartPipeClass;
+		this.defualtRF = maxRF;
 	}
 
 	@Override
@@ -37,6 +39,14 @@ public enum PipeTypeEnum implements IStringSerializable {
 
 	public int getMaxRF() {
 		return maxRF;
+	}
+
+	public void setMaxRF(int maxRF) {
+		this.maxRF = maxRF;
+	}
+
+	public int getDefualtRF() {
+		return defualtRF;
 	}
 
 	public String getFriendlyName() {

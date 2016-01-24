@@ -14,6 +14,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import reborncore.RebornCore;
@@ -29,6 +30,14 @@ public class FluxedRedstone {
     public static PipeStateHelper stateHelper;
 
     public static FluxedRedstoneCreativeTab creativeTab;
+
+    public static Config config;
+
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent event){
+        config = new Config(event.getSuggestedConfigurationFile());
+        config.preInit(event);
+    }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
