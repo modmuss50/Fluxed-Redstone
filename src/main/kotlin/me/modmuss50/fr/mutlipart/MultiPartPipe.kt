@@ -93,7 +93,7 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
 
 
     override fun addCollisionBoxes(mask: AxisAlignedBB?, list: MutableList<AxisAlignedBB>?, collidingEntity: Entity?) {
-        for (facing in EnumFacing.values) {
+        for (facing in EnumFacing.values()) {
             if (connectedSides.containsKey(facing)) {
                 if(boundingBoxes[Functions.getIntDirFromDirection(facing)]!!.toAABB().intersectsWith(mask)){
                     list!!.add(boundingBoxes[Functions.getIntDirFromDirection(facing)]!!.toAABB())
@@ -108,7 +108,7 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
 
 
     override fun addSelectionBoxes(list: MutableList<AxisAlignedBB>?) {
-        for (facing in EnumFacing.values) {
+        for (facing in EnumFacing.values()) {
             if (connectedSides.containsKey(facing)) {
                 list!!.add(boundingBoxes[Functions.getIntDirFromDirection(facing)]!!.toAABB())
             }
@@ -126,7 +126,7 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
 
     fun checkConnections() {
         connectedSides.clear()
-        for (facing in EnumFacing.values) {
+        for (facing in EnumFacing.values()) {
             if (shouldConnectTo(pos, facing)) {
                 connectedSides.put(facing, pos)
             }
@@ -222,7 +222,7 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
             if (world.isRemote)
                 return
 
-            for(face in EnumFacing.values){
+            for(face in EnumFacing.values()){
                 if(shouldConnectTo(pos, face)){
                     var offPos = pos.offset(face)
                     var tile = world.getTileEntity(offPos)
