@@ -2,6 +2,7 @@ buildscript {
     ext.kotlin_version = '1.0.0-beta-4589'
     repositories {
         mavenCentral()
+        jcenter()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
@@ -15,6 +16,7 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
     }
 }
 
@@ -23,13 +25,14 @@ apply plugin: 'kotlin'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: "kotlin"
+apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 configurations {
-    shade
-    compile.extendsFrom shade
+    shadow
+    compile.extendsFrom shadow
 }
 
 repositories {
@@ -37,10 +40,10 @@ repositories {
         name = "Modmuss50"
         url = "http://maven.modmuss50.me/"
     }
-	maven {
-		name = "Amadornes"
-		url "http://maven.amadornes.com/" 
-	}
+    maven {
+        name = "Amadornes"
+        url "http://maven.amadornes.com/"
+    }
     mavenCentral()
 }
 
@@ -64,42 +67,51 @@ group = 'FluxedRestone'
 
 dependencies {
     compile 'RebornCore:RebornCore-1.8.9:1.4.0.+:dev'
-	deobfCompile 'MCMultiPart:MCMultiPart:1.0.5:universal'
-    shade "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    shade "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    deobfCompile 'MCMultiPart:MCMultiPart:1.0.5:universal'
+    shadow "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    shadow "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }
 
-reobfJar { 
-    addExtraSrgLine "PK: kotlin kotlinRepackFluxedRedstone" 
-	addExtraSrgLine "PK: org/jetbrains org/jetbrainsRepackFluxedRedstone"
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version': project.version, 'mcversion': project.minecraft.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
 }
-
-processResources
-        {
-            inputs.property "version", project.version
-            inputs.property "mcversion", project.minecraft.version
-
-            from(sourceSets.main.resources.srcDirs) {
-                include 'mcmod.info'
-                expand 'version':project.version, 'mcversion':project.minecraft.version
-            }
-
-            from(sourceSets.main.resources.srcDirs) {
-                exclude 'mcmod.info'
-            }
-        }
 
 jar {
-    configurations.shade.each { dep ->
-        from(project.zipTree(dep)) {
-            exclude 'META-INF', 'META-INF/**'
-        }
-    }
     manifest {
         attributes 'FMLCorePlugin': 'io.drakon.forgelinFR.CorePlugin'
         attributes 'FMLCorePluginContainsFMLMod': 'true'
     }
 }
+
+
+jar.dependsOn shadowJar
+jar.enabled = false
+
+shadowJar {
+    archiveName = tasks.jar.archiveName
+    configurations = [project.configurations.shadow]
+    relocate 'kotlin', 'me.modmuss50.fr.repack.kotlin'
+    relocate 'org.jetbrains', 'me.modmuss50.fr.repack.org.jetbrains'
+	    manifest {
+        attributes 'FMLCorePlugin': 'io.drakon.forgelinFR.CorePlugin'
+        attributes 'FMLCorePluginContainsFMLMod': 'true'
+    }
+}
+
+reobfJar {
+    setJar(tasks.shadowJar.archivePath)
+}
+reobfJar.dependsOn shadowJar
 
 
 uploadArchives {
@@ -135,7 +147,9 @@ uploadArchives {
                         developer {
                             id 'modmuss50'
                             name 'modmuss50'
-                            roles { role 'developer' }
+                            roles {
+                                role 'developer'
+                            }
                         }
                     }
                 }
@@ -147,11 +161,6 @@ uploadArchives {
 task deobfJar(type: Jar) {
     from sourceSets.main.output
     classifier = 'dev'
-	configurations.shade.each { dep ->
-        from(project.zipTree(dep)) {
-            exclude 'META-INF', 'META-INF/**'
-        }
-    }
     manifest {
         attributes 'FMLCorePlugin': 'io.drakon.forgelinFR.CorePlugin'
         attributes 'FMLCorePluginContainsFMLMod': 'true'
