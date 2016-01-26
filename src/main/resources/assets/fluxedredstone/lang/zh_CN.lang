@@ -1,0 +1,5 @@
+itemGroup.fluxedredstone=红石通量线缆
+item.fluxedredstone.itemFluxedPipe.Redstone.name=红石能量线缆
+item.fluxedredstone.itemFluxedPipe.Gold.name=黄金能量线缆
+item.fluxedredstone.itemFluxedPipe.Blaze.name=烈焰能量线缆
+item.fluxedredstone.itemFluxedPipe.Ender.name=末影能量线缆
