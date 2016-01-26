@@ -69,6 +69,10 @@ dependencies {
     shade "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }
 
+reobfJar { 
+    addExtraSrgLine "PK: kotlin kotlinRepackFluxedRedstone" 
+	addExtraSrgLine "PK: org/jetbrains org/jetbrainsRepackFluxedRedstone"
+}
 
 processResources
         {
