@@ -250,6 +250,9 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
                         var averPower = (power + pipe.power) / 2
                         pipe.power = averPower
                         power = averPower
+                        if((power + pipe.power) % 2 != 0){ //This should fix rounding issues that cause power loss.
+                            pipe.power + 1;
+                        }
                     }
                 }
             }
