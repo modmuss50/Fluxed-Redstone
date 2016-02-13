@@ -1,15 +1,15 @@
 package me.modmuss50.fr.mutlipart.types
 
 import me.modmuss50.fr.PipeTypeEnum
-import me.modmuss50.fr.mutlipart.MultipartPipe
+import me.modmuss50.fr.mutlipart.PipeMultipart
 
 /**
  * Created by mark on 06/01/2016.
  */
-class GoldPipe : MultipartPipe() {
+class BlazePipeMultipart : PipeMultipart() {
 
     override fun getPipeType(): PipeTypeEnum {
-        return PipeTypeEnum.GOLD
+        return PipeTypeEnum.BALZE
     }
 
 }

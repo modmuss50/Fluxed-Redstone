@@ -27,7 +27,7 @@ import reborncore.common.misc.Functions
 import reborncore.common.misc.vecmath.Vecs3dCube
 import java.util.*
 
-open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
+open class PipeMultipart() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
 
     override fun getSlotMask(): EnumSet<PartSlot>? {
         return EnumSet.of(PartSlot.CENTER);
@@ -177,7 +177,7 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
         return false
     }
 
-    fun getPipe(world: World, blockPos: BlockPos, side: EnumFacing?): MultipartPipe? {
+    fun getPipe(world: World, blockPos: BlockPos, side: EnumFacing?): PipeMultipart? {
         val container = MultipartHelper.getPartContainer(world, blockPos) ?: return null
 
         if (side != null) {
@@ -188,7 +188,7 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
         }
 
         val part = container.getPartInSlot(PartSlot.CENTER)
-        if (part is MultipartPipe) {
+        if (part is PipeMultipart) {
             return part
         } else {
             return null

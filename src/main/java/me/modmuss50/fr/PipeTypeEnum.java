@@ -1,9 +1,9 @@
 package me.modmuss50.fr;
 
-import me.modmuss50.fr.mutlipart.MultipartPipe;
-import me.modmuss50.fr.mutlipart.types.BlazePipe;
-import me.modmuss50.fr.mutlipart.types.EnderPipe;
-import me.modmuss50.fr.mutlipart.types.GoldPipe;
+import me.modmuss50.fr.mutlipart.PipeMultipart;
+import me.modmuss50.fr.mutlipart.types.BlazePipeMultipart;
+import me.modmuss50.fr.mutlipart.types.EnderPipeMultipart;
+import me.modmuss50.fr.mutlipart.types.GoldPipeMultipart;
 import net.minecraft.util.IStringSerializable;
 
 /**
@@ -11,17 +11,17 @@ import net.minecraft.util.IStringSerializable;
  */
 public enum PipeTypeEnum implements IStringSerializable {
 
-    REDSTONE(128, "Redstone", "fluxedredstone:blocks/cable_redstone", 6.0, MultipartPipe.class),
-    GOLD(128 * 8, "Gold", "fluxedredstone:blocks/cable_gold", 6.0, GoldPipe.class),
-    BALZE(128 * 8 * 8, "Blaze", "fluxedredstone:blocks/cable_blaze", 6.0, BlazePipe.class),
-    ENDER(128 * 8 * 8 * 8, "Ender", "fluxedredstone:blocks/cable_ender", 5.0, EnderPipe.class);
+    REDSTONE(128, "Redstone", "fluxedredstone:blocks/cable_redstone", 6.0, PipeMultipart.class),
+    GOLD(128 * 8, "Gold", "fluxedredstone:blocks/cable_gold", 6.0, GoldPipeMultipart.class),
+    BALZE(128 * 8 * 8, "Blaze", "fluxedredstone:blocks/cable_blaze", 6.0, BlazePipeMultipart.class),
+    ENDER(128 * 8 * 8 * 8, "Ender", "fluxedredstone:blocks/cable_ender", 5.0, EnderPipeMultipart.class);
 
     private int maxRF;
     private int defualtRF;
     private String friendlyName;
     private String textureName;
     private Double thickness;
-    private Class<MultipartPipe> classType;
+    private Class<PipeMultipart> classType;
 
     PipeTypeEnum(int maxRF, String friendlyName, String textureName, Double thickness, Class multipartPipeClass) {
         this.maxRF = maxRF;
@@ -61,7 +61,7 @@ public enum PipeTypeEnum implements IStringSerializable {
         return thickness;
     }
 
-    public Class<MultipartPipe> getClassType() {
+    public Class<PipeMultipart> getClassType() {
         return classType;
     }
 }
