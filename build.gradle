@@ -24,7 +24,6 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'kotlin'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
-apply plugin: "kotlin"
 apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = 1.7
@@ -55,7 +54,7 @@ if (ENV.BUILD_NUMBER) {
 }
 
 minecraft {
-    version = "1.8.9-11.15.0.1718"
+    version = "1.8.9-11.15.1.1741"
     mappings = 'snapshot_20160103'
     replace "@MODVERSION@", project.version
     makeObfSourceJar = false
@@ -70,6 +69,7 @@ dependencies {
     deobfCompile 'MCMultiPart:MCMultiPart:1.0.6:universal'
     shadow "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     shadow "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
 processResources {

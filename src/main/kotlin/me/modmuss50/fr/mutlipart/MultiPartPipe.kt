@@ -279,4 +279,8 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
         list.add(ItemStack(FluxedRedstone.itemMultiPipe.get(getPipeType())))
         return list
     }
+
+    override fun getHardness(hit: PartMOP?): Float {
+        return 1F
+    }
 }

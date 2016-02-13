@@ -7,25 +7,40 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.*
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
+import net.minecraft.client.renderer.vertex.VertexFormat
 import net.minecraft.client.resources.model.IBakedModel
 import net.minecraft.client.resources.model.ModelRotation
+import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.Matrix4f
+import net.minecraftforge.client.ForgeHooksClient
+import net.minecraftforge.client.model.Attributes
+import net.minecraftforge.client.model.IFlexibleBakedModel
+import net.minecraftforge.client.model.IPerspectiveAwareModel
+import net.minecraftforge.client.model.ISmartItemModel
 import net.minecraftforge.common.property.ExtendedBlockState
 import net.minecraftforge.common.property.IExtendedBlockState
+import org.apache.commons.lang3.tuple.Pair
 import org.lwjgl.util.vector.Vector3f
 import reborncore.common.misc.vecmath.Vecs3dCube
 import java.util.*
 
 
-class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel {
+class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel , ISmartItemModel, IPerspectiveAwareModel {
 
     internal var faceBakery = FaceBakery()
     internal var texture: TextureAtlasSprite? = null
+
+    internal var transforms:ItemCameraTransforms;
 
     var state: IExtendedBlockState? = null
 
     init {
         texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite(type.textureName)
+        transforms = ItemCameraTransforms(ItemCameraTransforms.DEFAULT)
+        transforms.firstPerson.scale.y = 15F
+        transforms.firstPerson.scale.x = 15F
+        transforms.firstPerson.scale.z = 15F
     }
 
     constructor(state: IExtendedBlockState, PType : PipeTypeEnum) : this(PType) {
@@ -98,6 +113,23 @@ class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel {
     }
 
     override fun getItemCameraTransforms(): ItemCameraTransforms? {
-        return null
+        return transforms
     }
+
+    override fun handleItemState(p0: ItemStack?): IBakedModel? {
+        return this
+    }
+
+    override fun handlePerspective(p0: ItemCameraTransforms.TransformType?): Pair<out IFlexibleBakedModel, javax.vecmath.Matrix4f>? {
+        if(p0 == ItemCameraTransforms.TransformType.FIRST_PERSON || p0 == ItemCameraTransforms.TransformType.GUI){
+            return Pair.of(IFlexibleBakedModel::class.java.cast(this), FIRST_PERSON_FIX)
+        }
+        return Pair.of(IFlexibleBakedModel::class.java.cast(this), null);
+    }
+
+    override fun getFormat(): VertexFormat? {
+        return Attributes.DEFAULT_BAKED_FORMAT
+    }
+
+    var FIRST_PERSON_FIX: javax.vecmath.Matrix4f? = ForgeHooksClient.getMatrix(ItemTransformVec3f(Vector3f(0F, 0F, 0.0F), Vector3f(0F, 0F, 0F), Vector3f(2.3F, 2.3F, 2.3F)))
 }
