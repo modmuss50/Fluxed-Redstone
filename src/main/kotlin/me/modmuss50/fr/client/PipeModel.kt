@@ -31,16 +31,10 @@ class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel , ISmartItemMode
     internal var faceBakery = FaceBakery()
     internal var texture: TextureAtlasSprite? = null
 
-    internal var transforms:ItemCameraTransforms;
-
     var state: IExtendedBlockState? = null
 
     init {
         texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite(type.textureName)
-        transforms = ItemCameraTransforms(ItemCameraTransforms.DEFAULT)
-        transforms.firstPerson.scale.y = 15F
-        transforms.firstPerson.scale.x = 15F
-        transforms.firstPerson.scale.z = 15F
     }
 
     constructor(state: IExtendedBlockState, PType : PipeTypeEnum) : this(PType) {
@@ -113,7 +107,7 @@ class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel , ISmartItemMode
     }
 
     override fun getItemCameraTransforms(): ItemCameraTransforms? {
-        return transforms
+        return ItemCameraTransforms.DEFAULT
     }
 
     override fun handleItemState(p0: ItemStack?): IBakedModel? {
@@ -122,7 +116,7 @@ class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel , ISmartItemMode
 
     override fun handlePerspective(p0: ItemCameraTransforms.TransformType?): Pair<out IFlexibleBakedModel, javax.vecmath.Matrix4f>? {
         if(p0 == ItemCameraTransforms.TransformType.FIRST_PERSON || p0 == ItemCameraTransforms.TransformType.GUI){
-            return Pair.of(IFlexibleBakedModel::class.java.cast(this), FIRST_PERSON_FIX)
+            return Pair.of(IFlexibleBakedModel::class.java.cast(this), ClientStatics.matrix)
         }
         return Pair.of(IFlexibleBakedModel::class.java.cast(this), null);
     }
@@ -131,5 +125,4 @@ class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel , ISmartItemMode
         return Attributes.DEFAULT_BAKED_FORMAT
     }
 
-    var FIRST_PERSON_FIX: javax.vecmath.Matrix4f? = ForgeHooksClient.getMatrix(ItemTransformVec3f(Vector3f(0F, 0F, 0.0F), Vector3f(0F, 0F, 0F), Vector3f(2.3F, 2.3F, 2.3F)))
 }
