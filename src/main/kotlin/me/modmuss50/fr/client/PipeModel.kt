@@ -1,5 +1,6 @@
 package me.modmuss50.fr.client
 
+import ClientStatics
 import mcmultipart.client.multipart.ISmartMultipartModel
 import me.modmuss50.fr.FluxedRedstone
 import me.modmuss50.fr.PipeTypeEnum
@@ -12,13 +13,10 @@ import net.minecraft.client.resources.model.IBakedModel
 import net.minecraft.client.resources.model.ModelRotation
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.Matrix4f
-import net.minecraftforge.client.ForgeHooksClient
 import net.minecraftforge.client.model.Attributes
 import net.minecraftforge.client.model.IFlexibleBakedModel
 import net.minecraftforge.client.model.IPerspectiveAwareModel
 import net.minecraftforge.client.model.ISmartItemModel
-import net.minecraftforge.common.property.ExtendedBlockState
 import net.minecraftforge.common.property.IExtendedBlockState
 import org.apache.commons.lang3.tuple.Pair
 import org.lwjgl.util.vector.Vector3f
@@ -26,7 +24,7 @@ import reborncore.common.misc.vecmath.Vecs3dCube
 import java.util.*
 
 
-class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel , ISmartItemModel, IPerspectiveAwareModel {
+class PipeModel(val type: PipeTypeEnum) : ISmartMultipartModel, ISmartItemModel, IPerspectiveAwareModel {
 
     internal var faceBakery = FaceBakery()
     internal var texture: TextureAtlasSprite? = null
@@ -37,7 +35,7 @@ class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel , ISmartItemMode
         texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite(type.textureName)
     }
 
-    constructor(state: IExtendedBlockState, PType : PipeTypeEnum) : this(PType) {
+    constructor(state: IExtendedBlockState, PType: PipeTypeEnum) : this(PType) {
         this.state = state
     }
 
@@ -57,7 +55,7 @@ class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel , ISmartItemMode
         val thickness = type.thickness
         val lastThickness = 16 - type.thickness
         addCubeToList(Vecs3dCube(thickness, thickness, thickness, lastThickness, lastThickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
-        if(state != null){
+        if (state != null) {
             if (state!!.getValue(FluxedRedstone.stateHelper.UP)) {
                 addCubeToList(Vecs3dCube(thickness, lastThickness, thickness, lastThickness, 16.0, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
             }
@@ -115,7 +113,7 @@ class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel , ISmartItemMode
     }
 
     override fun handlePerspective(p0: ItemCameraTransforms.TransformType?): Pair<out IFlexibleBakedModel, javax.vecmath.Matrix4f>? {
-        if(p0 == ItemCameraTransforms.TransformType.FIRST_PERSON || p0 == ItemCameraTransforms.TransformType.GUI){
+        if (p0 == ItemCameraTransforms.TransformType.FIRST_PERSON || p0 == ItemCameraTransforms.TransformType.GUI) {
             return Pair.of(IFlexibleBakedModel::class.java.cast(this), ClientStatics.matrix)
         }
         return Pair.of(IFlexibleBakedModel::class.java.cast(this), null);
@@ -124,5 +122,4 @@ class PipeModel(val type : PipeTypeEnum) : ISmartMultipartModel , ISmartItemMode
     override fun getFormat(): VertexFormat? {
         return Attributes.DEFAULT_BAKED_FORMAT
     }
-
 }

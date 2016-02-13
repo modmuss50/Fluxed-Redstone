@@ -11,57 +11,57 @@ import net.minecraft.util.IStringSerializable;
  */
 public enum PipeTypeEnum implements IStringSerializable {
 
-	REDSTONE(128, "Redstone", "fluxedredstone:blocks/cable_redstone", 6.0, MultipartPipe.class),
-	GOLD(128 * 8, "Gold", "fluxedredstone:blocks/cable_gold", 6.0, GoldPipe.class),
-	BALZE(128 * 8 * 8, "Blaze", "fluxedredstone:blocks/cable_blaze", 6.0, BlazePipe.class),
-	ENDER(128 * 8 * 8 * 8, "Ender", "fluxedredstone:blocks/cable_ender", 5.0, EnderPipe.class);
+    REDSTONE(128, "Redstone", "fluxedredstone:blocks/cable_redstone", 6.0, MultipartPipe.class),
+    GOLD(128 * 8, "Gold", "fluxedredstone:blocks/cable_gold", 6.0, GoldPipe.class),
+    BALZE(128 * 8 * 8, "Blaze", "fluxedredstone:blocks/cable_blaze", 6.0, BlazePipe.class),
+    ENDER(128 * 8 * 8 * 8, "Ender", "fluxedredstone:blocks/cable_ender", 5.0, EnderPipe.class);
 
-	private int maxRF;
-	private int defualtRF;
-	private String friendlyName;
-	private String textureName;
-	private Double thickness;
-	private Class<MultipartPipe> classType;
+    private int maxRF;
+    private int defualtRF;
+    private String friendlyName;
+    private String textureName;
+    private Double thickness;
+    private Class<MultipartPipe> classType;
 
-	PipeTypeEnum(int maxRF, String friendlyName, String textureName, Double thickness, Class multipartPipeClass) {
-		this.maxRF = maxRF;
-		this.friendlyName = friendlyName;
-		this.textureName = textureName;
-		this.thickness = thickness;
-		this.classType = multipartPipeClass;
-		this.defualtRF = maxRF;
-	}
+    PipeTypeEnum(int maxRF, String friendlyName, String textureName, Double thickness, Class multipartPipeClass) {
+        this.maxRF = maxRF;
+        this.friendlyName = friendlyName;
+        this.textureName = textureName;
+        this.thickness = thickness;
+        this.classType = multipartPipeClass;
+        this.defualtRF = maxRF;
+    }
 
-	@Override
-	public String getName() {
-		return friendlyName.toLowerCase();
-	}
+    @Override
+    public String getName() {
+        return friendlyName.toLowerCase();
+    }
 
-	public int getMaxRF() {
-		return maxRF;
-	}
+    public int getMaxRF() {
+        return maxRF;
+    }
 
-	public void setMaxRF(int maxRF) {
-		this.maxRF = maxRF;
-	}
+    public void setMaxRF(int maxRF) {
+        this.maxRF = maxRF;
+    }
 
-	public int getDefualtRF() {
-		return defualtRF;
-	}
+    public int getDefualtRF() {
+        return defualtRF;
+    }
 
-	public String getFriendlyName() {
-		return friendlyName;
-	}
+    public String getFriendlyName() {
+        return friendlyName;
+    }
 
-	public String getTextureName() {
-		return textureName;
-	}
+    public String getTextureName() {
+        return textureName;
+    }
 
-	public Double getThickness() {
-		return thickness;
-	}
+    public Double getThickness() {
+        return thickness;
+    }
 
-	public Class<MultipartPipe> getClassType() {
-		return classType;
-	}
+    public Class<MultipartPipe> getClassType() {
+        return classType;
+    }
 }

@@ -1,16 +1,12 @@
 package io.drakon.forgelinFR
 
-import net.minecraftforge.fml.common.*
-import net.minecraftforge.fml.common.Mod.EventHandler
+import net.minecraftforge.fml.common.FMLModContainer
+import net.minecraftforge.fml.common.ILanguageAdapter
+import net.minecraftforge.fml.common.ModContainer
 import net.minecraftforge.fml.relauncher.Side
 import org.apache.logging.log4j.LogManager
-
 import java.lang.reflect.Field
 import java.lang.reflect.Method
-import java.util.Locale
-import kotlin.collections.any
-import kotlin.reflect.KClass
-import kotlin.reflect.jvm.kotlin
 
 /**
  * Kotlin implementation of FML's ILanguageAdapter.
@@ -77,6 +73,6 @@ public class KotlinAdapter : ILanguageAdapter {
         // Nothing to do; FML's got this covered for Kotlin.
     }
 
-    private class KotlinAdapterException(ex:Exception): RuntimeException("Kotlin adapter error - do not report to Forge!", ex)
+    private class KotlinAdapterException(ex: Exception) : RuntimeException("Kotlin adapter error - do not report to Forge!", ex)
 
 }

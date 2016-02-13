@@ -11,7 +11,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import net.minecraft.world.World
 
-class ItemMultipartPipe(val type : PipeTypeEnum) : ItemMultiPart() {
+class ItemMultipartPipe(val type: PipeTypeEnum) : ItemMultiPart() {
 
     override fun createPart(p0: World?, p1: BlockPos?, p2: EnumFacing?, p3: Vec3?, p4: ItemStack?, p5: EntityPlayer?): IMultipart? {
         return type.classType.newInstance()

@@ -3,7 +3,6 @@ package me.modmuss50.fr;
 import mcmultipart.multipart.MultipartRegistry;
 import me.modmuss50.fr.client.PipeModelBakery;
 import me.modmuss50.fr.mutlipart.ItemMultipartPipe;
-import me.modmuss50.fr.mutlipart.MultipartPipe;
 import me.modmuss50.fr.mutlipart.PipeStateHelper;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -34,7 +33,7 @@ public class FluxedRedstone {
     public static Config config;
 
     @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event){
+    public void preInit(FMLPreInitializationEvent event) {
         config = new Config(event.getSuggestedConfigurationFile());
         config.preInit(event);
     }
@@ -45,14 +44,14 @@ public class FluxedRedstone {
         creativeTab = new FluxedRedstoneCreativeTab();
 
 
-        for(PipeTypeEnum typeEnum : PipeTypeEnum.values()){
+        for (PipeTypeEnum typeEnum : PipeTypeEnum.values()) {
             MultipartRegistry.registerPart(typeEnum.getClassType(), "fluxedredstone:fluxedPipe." + typeEnum.getFriendlyName());
             itemMultiPipe.put(typeEnum, new ItemMultipartPipe(typeEnum).setCreativeTab(creativeTab).setUnlocalizedName("fluxedredstone.itemFluxedPipe." + typeEnum.getFriendlyName()));
             GameRegistry.registerItem(itemMultiPipe.get(typeEnum), "itemFluxedPipe." + typeEnum.getFriendlyName());
             RebornCore.jsonDestroyer.registerObject(itemMultiPipe.get(typeEnum));
         }
 
-        if(FMLCommonHandler.instance().getSide() == Side.CLIENT){ //Lazy man's proxy
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) { //Lazy man's proxy
             MinecraftForge.EVENT_BUS.register(new PipeModelBakery());
         }
 

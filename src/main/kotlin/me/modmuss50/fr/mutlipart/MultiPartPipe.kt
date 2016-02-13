@@ -16,7 +16,10 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.*
+import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.ITickable
 import net.minecraft.world.World
 import net.minecraftforge.common.property.ExtendedBlockState
 import net.minecraftforge.common.property.IExtendedBlockState
@@ -30,7 +33,7 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
         return EnumSet.of(PartSlot.CENTER);
     }
 
-    open fun getPipeType() : PipeTypeEnum{
+    open fun getPipeType(): PipeTypeEnum {
         return PipeTypeEnum.REDSTONE
     }
 
@@ -49,7 +52,7 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
 
     fun refreshBounding() {
         val centerFirst = (center - offset).toDouble()
-        val w =  (getPipeType().thickness / 16) - 0.5
+        val w = (getPipeType().thickness / 16) - 0.5
         boundingBoxes[6] = Vecs3dCube(centerFirst.toDouble() - w - 0.03, centerFirst.toDouble() - w - 0.08, centerFirst.toDouble() - w - 0.03, centerFirst.toDouble() + w + 0.08,
                 centerFirst.toDouble() + w + 0.04, centerFirst.toDouble() + w + 0.08)
 
@@ -95,16 +98,15 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
     override fun addCollisionBoxes(mask: AxisAlignedBB?, list: MutableList<AxisAlignedBB>?, collidingEntity: Entity?) {
         for (facing in EnumFacing.values()) {
             if (connectedSides.containsKey(facing)) {
-                if(boundingBoxes[Functions.getIntDirFromDirection(facing)]!!.toAABB().intersectsWith(mask)){
+                if (boundingBoxes[Functions.getIntDirFromDirection(facing)]!!.toAABB().intersectsWith(mask)) {
                     list!!.add(boundingBoxes[Functions.getIntDirFromDirection(facing)]!!.toAABB())
                 }
             }
         }
-        if(boundingBoxes[6]!!.toAABB().intersectsWith(mask)){
+        if (boundingBoxes[6]!!.toAABB().intersectsWith(mask)) {
             list!!.add(boundingBoxes[6]!!.toAABB())
         }
     }
-
 
 
     override fun addSelectionBoxes(list: MutableList<AxisAlignedBB>?) {
@@ -134,10 +136,10 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
     }
 
     fun shouldConnectTo(pos: BlockPos?, dir: EnumFacing?): Boolean {
-        if(dir != null){
-            if(internalShouldConnectTo(pos, dir)){
+        if (dir != null) {
+            if (internalShouldConnectTo(pos, dir)) {
                 var otherPipe = getPipe(world, pos!!.offset(dir), dir);
-                if(otherPipe != null && !otherPipe!!.internalShouldConnectTo(otherPipe!!.pos, dir.opposite)){
+                if (otherPipe != null && !otherPipe!!.internalShouldConnectTo(otherPipe!!.pos, dir.opposite)) {
                     return false
                 }
                 return true
@@ -148,10 +150,10 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
 
     fun internalShouldConnectTo(pos: BlockPos?, dir: EnumFacing?): Boolean {
         var slottedPart = PartSlot.getFaceSlot(dir)
-        if(slottedPart != null){
+        if (slottedPart != null) {
             var part = container.getPartInSlot(slottedPart)
-            if(part != null && part is IMicroblock.IFaceMicroblock){
-                if(!part.isFaceHollow){
+            if (part != null && part is IMicroblock.IFaceMicroblock) {
+                if (!part.isFaceHollow) {
                     return false
                 }
             }
@@ -215,42 +217,43 @@ open class MultipartPipe() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
     }
 
     override fun update() {
-        if(world != null) {
+        if (world != null) {
             if (world.totalWorldTime % 80 == 0.toLong()) {
                 checkConnections()
             }
             if (world.isRemote)
                 return
 
-            for(face in EnumFacing.values()){
-                if(shouldConnectTo(pos, face)){
+            for (face in EnumFacing.values()) {
+                if (shouldConnectTo(pos, face)) {
                     var offPos = pos.offset(face)
                     var tile = world.getTileEntity(offPos)
-                    if(tile is IEnergyConnection){
-                        if(tile is IEnergyProvider){
-                            if(tile.canConnectEnergy(face)){
-                                var move = tile.extractEnergy(face.opposite, Math.min(getPipeType().maxRF, getPipeType().maxRF * 4 - power) , false)
-                                if(move != 0){
+                    if (tile is IEnergyConnection) {
+                        if (tile is IEnergyProvider) {
+                            if (tile.canConnectEnergy(face)) {
+                                var move = tile.extractEnergy(face.opposite, Math.min(getPipeType().maxRF, getPipeType().maxRF * 4 - power), false)
+                                if (move != 0) {
                                     power += move;
                                     continue
                                 }
                             }
                         }
-                        if(tile is IEnergyReceiver){
-                            if(tile.canConnectEnergy(face)){
-                                var move = tile.receiveEnergy(face.opposite, Math.min(getPipeType().maxRF, power) , false)
-                                if(move != 0){
+                        if (tile is IEnergyReceiver) {
+                            if (tile.canConnectEnergy(face)) {
+                                var move = tile.receiveEnergy(face.opposite, Math.min(getPipeType().maxRF, power), false)
+                                if (move != 0) {
                                     power -= move;
                                 }
                             }
                         }
                     }
                     var pipe = getPipe(world, pos.offset(face), face)
-                    if(pipe != null){
+                    if (pipe != null) {
                         var averPower = (power + pipe.power) / 2
                         pipe.power = averPower
                         power = averPower
-                        if((power + pipe.power) % 2 != 0){ //This should fix rounding issues that cause power loss.
+                        if ((power + pipe.power) % 2 != 0) {
+                            //This should fix rounding issues that cause power loss.
                             pipe.power + 1;
                         }
                     }

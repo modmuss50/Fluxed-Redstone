@@ -9,9 +9,9 @@ import java.io.File
  */
 class Config(file: File?) : Configuration(file) {
 
-    fun preInit(event : FMLPreInitializationEvent){
+    fun preInit(event: FMLPreInitializationEvent) {
         this.load()
-        for(pipe in PipeTypeEnum.values()){
+        for (pipe in PipeTypeEnum.values()) {
             pipe.maxRF = getInt(pipe.friendlyName, "Energy", pipe.defualtRF, 0, Int.MAX_VALUE, "Change the amount of energy the ${pipe.friendlyName} Wire can transfer per tick")
         }
         this.save()
