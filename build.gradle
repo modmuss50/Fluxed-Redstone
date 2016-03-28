@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.0.0-rc-1036'
+    ext.kotlin_version = '1.0.1-1'
     repositories {
         mavenCentral()
         jcenter()
@@ -54,8 +54,8 @@ if (ENV.BUILD_NUMBER) {
 }
 
 minecraft {
-    version = "1.8.9-11.15.1.1741"
-    mappings = 'snapshot_20160103'
+    version = "1.9-12.16.0.1811-1.9"
+    mappings = "snapshot_20160316"
     replace "@MODVERSION@", project.version
     makeObfSourceJar = false
     useDepAts = true
@@ -65,8 +65,8 @@ minecraft {
 group = 'FluxedRestone'
 
 dependencies {
-    compile 'RebornCore:RebornCore-1.8.9:1.4.2.+:dev'
-    deobfCompile 'MCMultiPart:MCMultiPart:1.0.6:universal'
+    compile 'RebornCore:RebornCore-1.9:2.0.3.+:dev'
+    deobfCompile 'MCMultiPart:MCMultiPart-experimental:1.1.0_55:universal'
     shadow "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     shadow "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

@@ -10,16 +10,17 @@ import mcmultipart.raytrace.PartMOP
 import me.modmuss50.fr.FluxedRedstone
 import me.modmuss50.fr.PipeTypeEnum
 import net.minecraft.block.Block
-import net.minecraft.block.state.BlockState
+import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ITickable
+import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.common.property.ExtendedBlockState
 import net.minecraftforge.common.property.IExtendedBlockState
@@ -27,7 +28,7 @@ import reborncore.common.misc.Functions
 import reborncore.common.misc.vecmath.Vecs3dCube
 import java.util.*
 
-open class PipeMultipart() : Multipart(), IOccludingPart, ISlottedPart, ITickable {
+open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
 
     override fun getSlotMask(): EnumSet<PartSlot>? {
         return EnumSet.of(PartSlot.CENTER);
@@ -118,12 +119,19 @@ open class PipeMultipart() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
         list!!.add(boundingBoxes[6]!!.toAABB())
     }
 
-    override fun addOcclusionBoxes(list: MutableList<AxisAlignedBB>?) {
-        list!!.add(boundingBoxes[6]!!.toAABB())
-    }
+//    override fun addOcclusionBoxes(list: MutableList<AxisAlignedBB>?) {
+//        list!!.add(boundingBoxes[6]!!.toAABB())
+//    }
+//
+//
+//
+//    override fun getModelPath(): String? {
+//        return "fluxedredstone:FRPipe"
+//    }
 
-    override fun getModelPath(): String? {
-        return "fluxedredstone:FRPipe"
+
+    override fun getModelPath(): ResourceLocation? {
+        return ResourceLocation("fluxedredstone:FRPipe")
     }
 
     fun checkConnections() {
@@ -160,9 +168,9 @@ open class PipeMultipart() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
         }
 
 
-        if (!OcclusionHelper.occlusionTest(container.parts, this, boundingBoxes[Functions.getIntDirFromDirection(dir)]!!.toAABB())) {
-            return false;
-        }
+//        if (!OcclusionHelper.occlusionTest(container.parts, this, boundingBoxes[Functions.getIntDirFromDirection(dir)]!!.toAABB())) {
+//            return false;
+//        }
 
         var otherPipe = getPipe(world, pos!!.offset(dir), dir);
         if (otherPipe != null) {
@@ -211,7 +219,7 @@ open class PipeMultipart() : Multipart(), IOccludingPart, ISlottedPart, ITickabl
         checkConnections()
     }
 
-    override fun createBlockState(): BlockState? {
+    override fun createBlockState(): BlockStateContainer? {
         //return BlockState(MCMultiPartMod.multipart, FluxedRedstone.stateHelper.UP, FluxedRedstone.stateHelper.DOWN, FluxedRedstone.stateHelper.NORTH, FluxedRedstone.stateHelper.EAST, FluxedRedstone.stateHelper.WEST, FluxedRedstone.stateHelper.SOUTH)
         return ExtendedBlockState(MCMultiPartMod.multipart, arrayOf(FluxedRedstone.stateHelper.typeProp), arrayOf(FluxedRedstone.stateHelper.UP, FluxedRedstone.stateHelper.DOWN, FluxedRedstone.stateHelper.NORTH, FluxedRedstone.stateHelper.EAST, FluxedRedstone.stateHelper.WEST, FluxedRedstone.stateHelper.SOUTH))
     }

@@ -1,7 +1,6 @@
 package me.modmuss50.fr.client
 
 import ClientStatics
-import mcmultipart.client.multipart.ISmartMultipartModel
 import me.modmuss50.fr.FluxedRedstone
 import me.modmuss50.fr.PipeTypeEnum
 import net.minecraft.block.state.IBlockState
@@ -9,22 +8,20 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.*
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.renderer.vertex.VertexFormat
-import net.minecraft.client.resources.model.IBakedModel
-import net.minecraft.client.resources.model.ModelRotation
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.client.model.Attributes
-import net.minecraftforge.client.model.IFlexibleBakedModel
 import net.minecraftforge.client.model.IPerspectiveAwareModel
-import net.minecraftforge.client.model.ISmartItemModel
 import net.minecraftforge.common.property.IExtendedBlockState
 import org.apache.commons.lang3.tuple.Pair
 import org.lwjgl.util.vector.Vector3f
 import reborncore.common.misc.vecmath.Vecs3dCube
 import java.util.*
+import javax.vecmath.Matrix4f
 
 
-class PipeModel(val type: PipeTypeEnum) : ISmartMultipartModel, ISmartItemModel, IPerspectiveAwareModel {
+class PipeModel(val type: PipeTypeEnum) : IBakedModel, IPerspectiveAwareModel {
+
 
     internal var faceBakery = FaceBakery()
     internal var texture: TextureAtlasSprite? = null
@@ -40,15 +37,7 @@ class PipeModel(val type: PipeTypeEnum) : ISmartMultipartModel, ISmartItemModel,
     }
 
 
-    override fun handlePartState(partSate: IBlockState?): IBakedModel? {
-        return PipeModel(partSate as IExtendedBlockState, type)
-    }
-
-    override fun getFaceQuads(p_177551_1_: EnumFacing): List<BakedQuad> {
-        return ArrayList()
-    }
-
-    override fun getGeneralQuads(): List<BakedQuad> {
+    override fun getQuads(p0: IBlockState?, p1: EnumFacing?, p2: Long): MutableList<BakedQuad>? {
         val list = ArrayList<BakedQuad>()
         val uv = BlockFaceUV(floatArrayOf(0.0f, 0.0f, 16.0f, 16.0f), 0)
         val face = BlockPartFace(null, 0, "", uv)
@@ -75,9 +64,9 @@ class PipeModel(val type: PipeTypeEnum) : ISmartMultipartModel, ISmartItemModel,
                 addCubeToList(Vecs3dCube(0.0, thickness, thickness, lastThickness, lastThickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
             }
         }
-
         return list
     }
+
 
     fun addCubeToList(cube: Vecs3dCube, list: ArrayList<BakedQuad>, face: BlockPartFace, modelRotation: ModelRotation, cubeTexture: TextureAtlasSprite) {
         list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.minY.toFloat(), cube.maxZ.toFloat()), face, cubeTexture, EnumFacing.DOWN, modelRotation, null, true, true))//down
@@ -108,18 +97,20 @@ class PipeModel(val type: PipeTypeEnum) : ISmartMultipartModel, ISmartItemModel,
         return ItemCameraTransforms.DEFAULT
     }
 
-    override fun handleItemState(p0: ItemStack?): IBakedModel? {
-        return this
+
+//    override fun handlePerspective(p0: ItemCameraTransforms.TransformType?): Pair<out IFlexibleBakedModel, javax.vecmath.Matrix4f>? {
+//        if (p0 == ItemCameraTransforms.TransformType.FIRST_PERSON || p0 == ItemCameraTransforms.TransformType.GUI) {
+//            return Pair.of(IFlexibleBakedModel::class.java.cast(this), ClientStatics.matrix)
+//        }
+//        return Pair.of(IFlexibleBakedModel::class.java.cast(this), null);
+//    }
+//
+
+    override fun getOverrides(): ItemOverrideList? {
+        return ItemOverrideList.NONE
     }
 
-    override fun handlePerspective(p0: ItemCameraTransforms.TransformType?): Pair<out IFlexibleBakedModel, javax.vecmath.Matrix4f>? {
-        if (p0 == ItemCameraTransforms.TransformType.FIRST_PERSON || p0 == ItemCameraTransforms.TransformType.GUI) {
-            return Pair.of(IFlexibleBakedModel::class.java.cast(this), ClientStatics.matrix)
-        }
-        return Pair.of(IFlexibleBakedModel::class.java.cast(this), null);
-    }
-
-    override fun getFormat(): VertexFormat? {
-        return Attributes.DEFAULT_BAKED_FORMAT
+    override fun handlePerspective(p0: ItemCameraTransforms.TransformType?): Pair<out IBakedModel, Matrix4f>? {
+        return Pair.of(IBakedModel::class.java.cast(this), null);
     }
 }
