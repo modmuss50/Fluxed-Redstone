@@ -39,36 +39,40 @@ class PipeModel(val type: PipeTypeEnum) : IBakedModel, IPerspectiveAwareModel {
 
     override fun getQuads(p0: IBlockState?, p1: EnumFacing?, p2: Long): MutableList<BakedQuad>? {
         val list = ArrayList<BakedQuad>()
-        val uv = BlockFaceUV(floatArrayOf(0.0f, 0.0f, 16.0f, 16.0f), 0)
-        val face = BlockPartFace(null, 0, "", uv)
         val thickness = type.thickness
         val lastThickness = 16 - type.thickness
-        addCubeToList(Vecs3dCube(thickness, thickness, thickness, lastThickness, lastThickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
+        addCubeToList(Vecs3dCube(thickness, thickness, thickness, lastThickness, lastThickness, lastThickness), list,  ModelRotation.X0_Y0, texture!!, EnumFacing.DOWN)
         if (state != null) {
             if (state!!.getValue(FluxedRedstone.stateHelper.UP)) {
-                addCubeToList(Vecs3dCube(thickness, lastThickness, thickness, lastThickness, 16.0, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
+                addCubeToList(Vecs3dCube(thickness, lastThickness, thickness, lastThickness, 16.0, lastThickness), list,  ModelRotation.X0_Y0, texture!!, p1!!)
             }
             if (state!!.getValue(FluxedRedstone.stateHelper.DOWN)) {
-                addCubeToList(Vecs3dCube(thickness, 0.0, thickness, lastThickness, thickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
+                addCubeToList(Vecs3dCube(thickness, 0.0, thickness, lastThickness, thickness, lastThickness), list,  ModelRotation.X0_Y0, texture!!, p1!!)
             }
             if (state!!.getValue(FluxedRedstone.stateHelper.NORTH)) {
-                addCubeToList(Vecs3dCube(thickness, thickness, 0.0, lastThickness, lastThickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
+                addCubeToList(Vecs3dCube(thickness, thickness, 0.0, lastThickness, lastThickness, lastThickness), list,  ModelRotation.X0_Y0, texture!!, p1!!)
             }
             if (state!!.getValue(FluxedRedstone.stateHelper.SOUTH)) {
-                addCubeToList(Vecs3dCube(thickness, thickness, thickness, lastThickness, lastThickness, 16.0), list, face, ModelRotation.X0_Y0, texture!!)
+                addCubeToList(Vecs3dCube(thickness, thickness, thickness, lastThickness, lastThickness, 16.0), list, ModelRotation.X0_Y0, texture!!, p1!!)
             }
             if (state!!.getValue(FluxedRedstone.stateHelper.EAST)) {
-                addCubeToList(Vecs3dCube(thickness, thickness, thickness, 16.0, lastThickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
+                addCubeToList(Vecs3dCube(thickness, thickness, thickness, 16.0, lastThickness, lastThickness), list, ModelRotation.X0_Y0, texture!!, p1!!)
             }
             if (state!!.getValue(FluxedRedstone.stateHelper.WEST)) {
-                addCubeToList(Vecs3dCube(0.0, thickness, thickness, lastThickness, lastThickness, lastThickness), list, face, ModelRotation.X0_Y0, texture!!)
+                addCubeToList(Vecs3dCube(0.0, thickness, thickness, lastThickness, lastThickness, lastThickness), list, ModelRotation.X0_Y0, texture!!, p1!!)
             }
         }
         return list
     }
 
 
-    fun addCubeToList(cube: Vecs3dCube, list: ArrayList<BakedQuad>, face: BlockPartFace, modelRotation: ModelRotation, cubeTexture: TextureAtlasSprite) {
+    fun addCubeToList(cube: Vecs3dCube, list: ArrayList<BakedQuad>, modelRotation: ModelRotation, cubeTexture: TextureAtlasSprite, dir : EnumFacing) {
+        var uv = BlockFaceUV(floatArrayOf(cube.minX.toFloat(), cube.minY.toFloat(), cube.maxX.toFloat(), cube.maxY.toFloat()), 0)
+        var  face = BlockPartFace(null, 0, "", uv)
+        if (dir == EnumFacing.NORTH || dir == EnumFacing.SOUTH) {
+            uv = BlockFaceUV(floatArrayOf(cube.minZ.toFloat(), cube.minY.toFloat(), cube.maxZ.toFloat(), cube.maxY.toFloat()), 0)
+            face = BlockPartFace(null, 0, "", uv)
+        }
         list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.minY.toFloat(), cube.maxZ.toFloat()), face, cubeTexture, EnumFacing.DOWN, modelRotation, null, true, true))//down
         list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.maxY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, cubeTexture, EnumFacing.UP, modelRotation, null, true, true))//up
         list.add(faceBakery.makeBakedQuad(Vector3f(cube.minX.toFloat(), cube.minY.toFloat(), cube.minZ.toFloat()), Vector3f(cube.maxX.toFloat(), cube.maxY.toFloat(), cube.maxZ.toFloat()), face, cubeTexture, EnumFacing.NORTH, modelRotation, null, true, true))//north
