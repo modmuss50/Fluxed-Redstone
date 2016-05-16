@@ -57,27 +57,27 @@ public class FluxedRedstone {
 
         CraftingHelper.addShapedOreRecipe(new ItemStack(itemMultiPipe.get(PipeTypeEnum.REDSTONE), 6),
                 "GRG", "RSR", "GRG",
-                'G', new ItemStack(Blocks.glass_pane),
-                'R', new ItemStack(Items.redstone),
-                'S', new ItemStack(Blocks.stone));
+                'G', new ItemStack(Blocks.GLASS_PANE),
+                'R', new ItemStack(Items.REDSTONE),
+                'S', new ItemStack(Blocks.STONE));
 
         CraftingHelper.addShapedOreRecipe(new ItemStack(itemMultiPipe.get(PipeTypeEnum.GOLD), 6),
                 "GRG", "RSR", "GRG",
-                'G', new ItemStack(Blocks.glass_pane),
-                'R', new ItemStack(Items.gold_ingot),
+                'G', new ItemStack(Blocks.GLASS_PANE),
+                'R', new ItemStack(Items.GOLD_INGOT),
                 'S', new ItemStack(itemMultiPipe.get(PipeTypeEnum.REDSTONE)));
 
         CraftingHelper.addShapedOreRecipe(new ItemStack(itemMultiPipe.get(PipeTypeEnum.BALZE), 4),
                 "GRG", "RSR", "GRG",
-                'G', new ItemStack(Blocks.iron_bars),
-                'R', new ItemStack(Items.blaze_rod),
+                'G', new ItemStack(Blocks.IRON_BARS),
+                'R', new ItemStack(Items.BLAZE_ROD),
                 'S', new ItemStack(itemMultiPipe.get(PipeTypeEnum.GOLD)));
 
         CraftingHelper.addShapedOreRecipe(new ItemStack(itemMultiPipe.get(PipeTypeEnum.ENDER), 4),
                 "GRG", "RSR", "GRG",
-                'G', new ItemStack(Items.gold_ingot),
-                'R', new ItemStack(Items.ender_pearl),
-                'S', new ItemStack(Items.ghast_tear));
+                'G', new ItemStack(Items.GOLD_INGOT),
+                'R', new ItemStack(Items.ENDER_PEARL),
+                'S', new ItemStack(Items.GHAST_TEAR));
 
 
     }
