@@ -9,6 +9,8 @@ import mcmultipart.multipart.*
 import mcmultipart.raytrace.PartMOP
 import me.modmuss50.fr.FluxedRedstone
 import me.modmuss50.fr.PipeTypeEnum
+import net.darkhax.tesla.api.ITeslaProducer
+import net.darkhax.tesla.capability.TeslaCapabilities
 import net.minecraft.block.Block
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
@@ -178,8 +180,18 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
         }
 
         var tile = world.getTileEntity(pos.offset(dir))
-        if (tile is IEnergyConnection) {
-            return true
+        if(tile != null){
+            if (tile is IEnergyConnection) {
+                if(tile.canConnectEnergy(dir)){
+                    return true
+                }
+            }
+            if(tile.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, dir)){
+                return true
+            }
+            if(tile.hasCapability(TeslaCapabilities.CAPABILITY_PRODUCER, dir)){
+                return true
+            }
         }
 
         return false
@@ -229,20 +241,34 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
             if (world.totalWorldTime % 80 == 0.toLong()) {
                 checkConnections()
             }
-            if (world.isRemote)
+            if (world.isRemote){
                 return
+            }
 
             for (face in EnumFacing.values()) {
-                if (shouldConnectTo(pos, face)) {
+                if (connectedSides.containsKey(face)) {
                     var offPos = pos.offset(face)
                     var tile = world.getTileEntity(offPos)
+                    if(tile.hasCapability(TeslaCapabilities.CAPABILITY_PRODUCER, face)){
+                        var producer = tile.getCapability(TeslaCapabilities.CAPABILITY_PRODUCER, face);
+                        var move = producer.takePower(Math.min(getPipeType().maxRF, (getPipeType().maxRF * 4) - power).toLong(), false)
+                        if(move != 0L){
+                            power += move.toInt();
+                        }
+                    }
+                    if(tile.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, face)){
+                        var consumer = tile.getCapability(TeslaCapabilities.CAPABILITY_CONSUMER, face)
+                        var move = consumer.givePower(Math.min(getPipeType().maxRF, power).toLong(), false);
+                        if(move != 0L){
+                            power -= move.toInt();
+                        }
+                    }
                     if (tile is IEnergyConnection) {
                         if (tile is IEnergyProvider) {
                             if (tile.canConnectEnergy(face)) {
                                 var move = tile.extractEnergy(face.opposite, Math.min(getPipeType().maxRF, getPipeType().maxRF * 4 - power), false)
                                 if (move != 0) {
                                     power += move;
-                                    continue
                                 }
                             }
                         }
