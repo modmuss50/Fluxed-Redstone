@@ -249,15 +249,15 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                 if (connectedSides.containsKey(face)) {
                     var offPos = pos.offset(face)
                     var tile = world.getTileEntity(offPos)
-                    if(tile.hasCapability(TeslaCapabilities.CAPABILITY_PRODUCER, face)){
-                        var producer = tile.getCapability(TeslaCapabilities.CAPABILITY_PRODUCER, face);
+                    if(tile.hasCapability(TeslaCapabilities.CAPABILITY_PRODUCER, face.opposite)){
+                        var producer = tile.getCapability(TeslaCapabilities.CAPABILITY_PRODUCER, face.opposite);
                         var move = producer.takePower(Math.min(getPipeType().maxRF, (getPipeType().maxRF * 4) - power).toLong(), false)
                         if(move != 0L){
                             power += move.toInt();
                         }
                     }
-                    if(tile.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, face)){
-                        var consumer = tile.getCapability(TeslaCapabilities.CAPABILITY_CONSUMER, face)
+                    if(tile.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, face.opposite)){
+                        var consumer = tile.getCapability(TeslaCapabilities.CAPABILITY_CONSUMER, face.opposite)
                         var move = consumer.givePower(Math.min(getPipeType().maxRF, power).toLong(), false);
                         if(move != 0L){
                             power -= move.toInt();
