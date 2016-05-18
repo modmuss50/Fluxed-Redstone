@@ -184,3 +184,61 @@ task wrapper(type: Wrapper) {
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
 }
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            //This is used when the build is done on a slave node
+            if (project.hasProperty('mavenPass'))
+            {
+                println 'Uploading to remote Maven Repo'
+                repository(url: "http://mavenupload.modmuss50.me/") {
+                    authentication(userName: "buildslave", password: project.getProperty('mavenPass'))
+                }
+            }
+            else
+            {
+                //this is when the build is executed on the master node
+                println 'Uploading to local Maven Repo'
+                repository(url: "file:///var/www/maven/")
+            }
+
+
+
+            pom {
+                groupId = "FluxedRestone"
+                version = project.version
+                artifactId = project.archivesBaseName
+                project {
+                    name project.archivesBaseName
+                    packaging 'jar'
+                    description 'FluxedRestone'
+                    url 'https://github.com/modmuss50/FluxedRestone'
+                    scm {
+                        url 'https://github.com/modmuss50/FluxedRestone'
+                        connection 'scm:git:git@github.com:TechReborn/FluxedRestone.git'
+                        developerConnection 'scm:git:git@github.com:modmuss50/FluxedRestone.git'
+                    }
+                    issueManagement {
+                        system 'github'
+                        url 'https://github.com/modmuss50/FluxedRestone/issues'
+                    }
+                    licenses {
+                        license {
+                            name 'License'
+                            url 'https://raw.githubusercontent.com/modmuss50/FluxedRestone/master/LICENSE.md'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'modmuss50'
+                            name 'modmuss50'
+                            roles { role 'developer' }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
