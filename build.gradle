@@ -130,20 +130,20 @@ uploadArchives {
                     name project.archivesBaseName
                     packaging 'jar'
                     description 'FluxedRestone'
-                    url 'https://github.com/modmuss50/Fluxed-Redstone'
+                    url 'https://github.com/modmuss50/FluxedRedstone'
                     scm {
-                        url 'https://github.com/modmuss50/Fluxed-Redstone'
-                        connection 'scm:git:git@github.com:modmuss50/Fluxed-Redstone.git'
-                        developerConnection 'scm:git:git@github.com:modmuss50/Fluxed-Redstone.git'
+                        url 'https://github.com/modmuss50/FluxedRedstone'
+                        connection 'scm:git:git@github.com:modmuss50/FluxedRedstone.git'
+                        developerConnection 'scm:git:git@github.com:modmuss50/FluxedRedstone.git'
                     }
                     issueManagement {
                         system 'github'
-                        url 'https://github.com/modmuss50/Fluxed-Redstone/issues'
+                        url 'https://github.com/modmuss50/FluxedRedstone/issues'
                     }
                     licenses {
                         license {
                             name 'License'
-                            url 'https://raw.githubusercontent.com/modmuss50/Fluxed-Redstone/master/LICENSE.md'
+                            url 'https://raw.githubusercontent.com/modmuss50/FluxedRedstone/master/LICENSE.md'
                             distribution 'repo'
                         }
                     }
