@@ -186,10 +186,10 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                     return true
                 }
             }
-            if(tile.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, dir)){
+            if(tile.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, dir?.opposite)){
                 return true
             }
-            if(tile.hasCapability(TeslaCapabilities.CAPABILITY_PRODUCER, dir)){
+            if(tile.hasCapability(TeslaCapabilities.CAPABILITY_PRODUCER, dir?.opposite)){
                 return true
             }
         }
