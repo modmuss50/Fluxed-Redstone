@@ -13,7 +13,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
@@ -45,7 +45,7 @@ repositories {
     }
     mavenCentral()
     maven {
-        url 'http://maven.rubbix.net'
+        url 'http://maven.epoxide.xyz'
     }
 }
 
@@ -57,8 +57,8 @@ if (ENV.BUILD_NUMBER) {
 }
 
 minecraft {
-    version = "1.9-12.16.1.1887"
-    mappings = "snapshot_20160506"
+    version = "1.9.4-12.17.0.1922-1.9.4"
+    mappings = "snapshot_20160528"
     replace "@MODVERSION@", project.version
     makeObfSourceJar = false
     useDepAts = true
@@ -68,12 +68,12 @@ minecraft {
 group = 'FluxedRestone'
 
 dependencies {
-    compile 'RebornCore:RebornCore-1.9:2.3.1.+:dev'
-    deobfCompile 'MCMultiPart:MCMultiPart-experimental:1.2.0_61:universal'
+    compile 'RebornCore:RebornCore-1.9.4:+:dev'
+    deobfCompile 'MCMultiPart:MCMultiPart-experimental:1.2.0_67:universal'
     shadow "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     shadow "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "net.darkhax.tesla:Tesla:1.9-1.0.2.23:deobf"
+    compile "net.darkhax.tesla:Tesla:1.9.4-1.1.0.24:deobf"
 }
 
 processResources {
