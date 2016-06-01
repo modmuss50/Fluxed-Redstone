@@ -37,8 +37,10 @@ class PipeModel(var type: PipeTypeEnum) : IBakedModel, IPerspectiveAwareModel {
 
 
     override fun getQuads(blockState: IBlockState?, p1: EnumFacing?, p2: Long): MutableList<BakedQuad>? {
-        type = blockState!!.getValue(FluxedRedstone.stateHelper.typeProp)
-        texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite(type.textureName)
+        if(blockState != null){
+            type = blockState!!.getValue(FluxedRedstone.stateHelper.typeProp)
+            texture = Minecraft.getMinecraft().textureMapBlocks.getAtlasSprite(type.textureName)
+        }
         val list = ArrayList<BakedQuad>()
         val thickness = type.thickness
         val lastThickness = 16 - type.thickness
