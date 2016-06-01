@@ -1,7 +1,7 @@
 package me.modmuss50.fr.mutlipart
 
-import mcmultipart.item.ItemMultiPart
-import mcmultipart.multipart.IMultipart
+import reborncore.mcmultipart.item.ItemMultiPart
+import reborncore.mcmultipart.multipart.IMultipart
 import me.modmuss50.fr.PipeTypeEnum
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack

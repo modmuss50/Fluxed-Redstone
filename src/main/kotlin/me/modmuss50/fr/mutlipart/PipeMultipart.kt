@@ -3,10 +3,10 @@ package me.modmuss50.fr.mutlipart
 import cofh.api.energy.IEnergyConnection
 import cofh.api.energy.IEnergyProvider
 import cofh.api.energy.IEnergyReceiver
-import mcmultipart.MCMultiPartMod
-import mcmultipart.microblock.IMicroblock
-import mcmultipart.multipart.*
-import mcmultipart.raytrace.PartMOP
+import reborncore.mcmultipart.MCMultiPartMod
+import reborncore.mcmultipart.microblock.IMicroblock
+import reborncore.mcmultipart.multipart.*
+import reborncore.mcmultipart.raytrace.PartMOP
 import me.modmuss50.fr.FluxedRedstone
 import me.modmuss50.fr.PipeTypeEnum
 import net.darkhax.tesla.api.ITeslaProducer

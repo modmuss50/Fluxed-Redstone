@@ -1,6 +1,6 @@
 package me.modmuss50.fr;
 
-import mcmultipart.multipart.MultipartRegistry;
+import reborncore.mcmultipart.multipart.MultipartRegistry;
 import me.modmuss50.fr.client.PipeModelBakery;
 import me.modmuss50.fr.mutlipart.ItemMultipartPipe;
 import me.modmuss50.fr.mutlipart.PipeStateHelper;
@@ -21,7 +21,7 @@ import reborncore.common.util.CraftingHelper;
 
 import java.util.HashMap;
 
-@Mod(modid = "fluxedredstone", name = "FluxedRedstone", version = "@MODVERSION@", dependencies = "required-after:reborncore;required-after:mcmultipart;required-after:Tesla")
+@Mod(modid = "fluxedredstone", name = "FluxedRedstone", version = "@MODVERSION@", dependencies = "required-after:reborncore;required-after:reborncore-mcmultipart;required-after:Tesla")
 public class FluxedRedstone {
 
     public static HashMap<PipeTypeEnum, Item> itemMultiPipe = new HashMap<>();
