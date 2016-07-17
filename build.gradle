@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.0.2'
+    ext.kotlin_version = '1.0.3'
     repositories {
         mavenCentral()
         jcenter()
@@ -26,8 +26,8 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 configurations {
     shadow
@@ -57,8 +57,8 @@ if (ENV.BUILD_NUMBER) {
 }
 
 minecraft {
-    version = "1.9.4-12.17.0.1922-1.9.4"
-    mappings = "snapshot_20160528"
+    version = "1.10.2-12.18.1.2014"
+    mappings = "snapshot_20160717"
     replace "@MODVERSION@", project.version
     makeObfSourceJar = false
     useDepAts = true
@@ -68,7 +68,7 @@ minecraft {
 group = 'FluxedRestone'
 
 dependencies {
-    compile 'RebornCore:RebornCore-1.9.4:2.5.+:dev'
+    compile 'RebornCore:RebornCore-1.10.2:2.5.+:dev'
     shadow "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     shadow "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
