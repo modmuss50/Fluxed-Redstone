@@ -21,7 +21,7 @@ import reborncore.common.util.CraftingHelper;
 
 import java.util.HashMap;
 
-@Mod(modid = "fluxedredstone", name = "FluxedRedstone", version = "@MODVERSION@", dependencies = "required-after:reborncore;required-after:reborncore-mcmultipart;required-after:Tesla")
+@Mod(modid = "fluxedredstone", name = "FluxedRedstone", version = "@MODVERSION@", dependencies = "required-after:reborncore;required-after:reborncore-mcmultipart;required-after:tesla")
 public class FluxedRedstone {
 
     public static HashMap<PipeTypeEnum, Item> itemMultiPipe = new HashMap<>();

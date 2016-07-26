@@ -1,3 +1,5 @@
+package me.modmuss50.fr;
+
 import net.minecraft.client.renderer.block.model.ItemTransformVec3f;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.util.vector.Vector3f;

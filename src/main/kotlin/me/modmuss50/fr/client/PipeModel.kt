@@ -1,6 +1,6 @@
 package me.modmuss50.fr.client
 
-import ClientStatics
+import me.modmuss50.fr.ClientStatics
 import me.modmuss50.fr.FluxedRedstone
 import me.modmuss50.fr.PipeTypeEnum
 import net.minecraft.block.state.IBlockState
@@ -110,7 +110,7 @@ class PipeModel(var type: PipeTypeEnum) : IBakedModel, IPerspectiveAwareModel {
 
 //    override fun handlePerspective(p0: ItemCameraTransforms.TransformType?): Pair<out IFlexibleBakedModel, javax.vecmath.Matrix4f>? {
 //        if (p0 == ItemCameraTransforms.TransformType.FIRST_PERSON || p0 == ItemCameraTransforms.TransformType.GUI) {
-//            return Pair.of(IFlexibleBakedModel::class.java.cast(this), ClientStatics.matrix)
+//            return Pair.of(IFlexibleBakedModel::class.java.cast(this), me.modmuss50.fr.ClientStatics.matrix)
 //        }
 //        return Pair.of(IFlexibleBakedModel::class.java.cast(this), null);
 //    }
