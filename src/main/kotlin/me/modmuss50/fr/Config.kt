@@ -14,6 +14,8 @@ class Config(file: File?) : Configuration(file) {
         for (pipe in PipeTypeEnum.values()) {
             pipe.maxRF = getInt(pipe.friendlyName, "Energy", pipe.defualtRF, 0, Int.MAX_VALUE, "Change the amount of energy the ${pipe.friendlyName} Wire can transfer per tick")
         }
+        FluxedRedstone.RFSupport = getBoolean("RF", "PowerNet", true, "Enable RF support")
+        FluxedRedstone.teslaSupport = getBoolean("TESLA", "PowerNet", true, "Enable Tesla support")
         this.save()
     }
 

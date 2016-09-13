@@ -3,14 +3,8 @@ package me.modmuss50.fr.mutlipart
 import cofh.api.energy.IEnergyConnection
 import cofh.api.energy.IEnergyProvider
 import cofh.api.energy.IEnergyReceiver
-import reborncore.mcmultipart.MCMultiPartMod
-import reborncore.mcmultipart.microblock.IMicroblock
-import reborncore.mcmultipart.multipart.*
-import reborncore.mcmultipart.raytrace.PartMOP
 import me.modmuss50.fr.FluxedRedstone
 import me.modmuss50.fr.PipeTypeEnum
-import net.darkhax.tesla.api.ITeslaProducer
-import net.darkhax.tesla.capability.TeslaCapabilities
 import net.minecraft.block.Block
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
@@ -26,8 +20,17 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.common.property.ExtendedBlockState
 import net.minecraftforge.common.property.IExtendedBlockState
+import net.minecraftforge.energy.CapabilityEnergy
+import net.minecraftforge.energy.IEnergyStorage
 import reborncore.common.misc.Functions
 import reborncore.common.misc.vecmath.Vecs3dCube
+import reborncore.mcmultipart.MCMultiPartMod
+import reborncore.mcmultipart.microblock.IMicroblock
+import reborncore.mcmultipart.multipart.ISlottedPart
+import reborncore.mcmultipart.multipart.Multipart
+import reborncore.mcmultipart.multipart.MultipartHelper
+import reborncore.mcmultipart.multipart.PartSlot
+import reborncore.mcmultipart.raytrace.PartMOP
 import java.util.*
 
 open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
@@ -121,17 +124,6 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
         list!!.add(boundingBoxes[6]!!.toAABB())
     }
 
-//    override fun addOcclusionBoxes(list: MutableList<AxisAlignedBB>?) {
-//        list!!.add(boundingBoxes[6]!!.toAABB())
-//    }
-//
-//
-//
-//    override fun getModelPath(): String? {
-//        return "fluxedredstone:FRPipe"
-//    }
-
-
     override fun getModelPath(): ResourceLocation? {
         return ResourceLocation("fluxedredstone:FRPipe")
     }
@@ -180,16 +172,19 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
         }
 
         var tile = world.getTileEntity(pos.offset(dir))
-        if(tile != null){
-            if (tile is IEnergyConnection) {
-                if(tile.canConnectEnergy(dir)){
-                    return true
+        if (tile != null) {
+            if(FluxedRedstone.RFSupport){
+                if (tile is IEnergyConnection) {
+                    if (tile.canConnectEnergy(dir)) {
+                        return true
+                    }
                 }
             }
-            if(tile.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, dir?.opposite)){
+            if(FluxedRedstone.teslaSupport && FluxedRedstone.teslaManager.canConnect(tile, dir!!)){
                 return true
             }
-            if(tile.hasCapability(TeslaCapabilities.CAPABILITY_PRODUCER, dir?.opposite)){
+
+            if (tile.hasCapability(CapabilityEnergy.ENERGY, dir?.opposite)) {
                 return true
             }
         }
@@ -232,7 +227,6 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
     }
 
     override fun createBlockState(): BlockStateContainer? {
-        //return BlockState(MCMultiPartMod.multipart, FluxedRedstone.stateHelper.UP, FluxedRedstone.stateHelper.DOWN, FluxedRedstone.stateHelper.NORTH, FluxedRedstone.stateHelper.EAST, FluxedRedstone.stateHelper.WEST, FluxedRedstone.stateHelper.SOUTH)
         return ExtendedBlockState(MCMultiPartMod.multipart, arrayOf(FluxedRedstone.stateHelper.typeProp), arrayOf(FluxedRedstone.stateHelper.UP, FluxedRedstone.stateHelper.DOWN, FluxedRedstone.stateHelper.NORTH, FluxedRedstone.stateHelper.EAST, FluxedRedstone.stateHelper.WEST, FluxedRedstone.stateHelper.SOUTH))
     }
 
@@ -241,29 +235,35 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
             if (world.totalWorldTime % 80 == 0.toLong()) {
                 checkConnections()
             }
-            if (world.isRemote){
+            if (world.isRemote) {
                 return
             }
 
             for (face in EnumFacing.values()) {
                 if (connectedSides.containsKey(face)) {
                     var offPos = pos.offset(face)
-                    var tile = world.getTileEntity(offPos)
-                    if(tile!!.hasCapability(TeslaCapabilities.CAPABILITY_PRODUCER, face.opposite)){
-                        var producer = tile.getCapability(TeslaCapabilities.CAPABILITY_PRODUCER, face.opposite);
-                        var move = producer.takePower(Math.min(getPipeType().maxRF, (getPipeType().maxRF * 4) - power).toLong(), false)
-                        if(move != 0L){
-                            power += move.toInt();
+                    var tile = world.getTileEntity(offPos)!!
+                    //Tesla
+                    if(FluxedRedstone.teslaSupport){
+                        FluxedRedstone.teslaManager!!.update(this, tile, face)
+                    }
+                    //Forge
+                    if (tile.hasCapability(CapabilityEnergy.ENERGY, face.opposite)) {
+                        var energy: IEnergyStorage = tile.getCapability(CapabilityEnergy.ENERGY, face.opposite)
+                        if (energy.canExtract()) {
+                            var move = energy.extractEnergy(Math.min(getPipeType().maxRF, getPipeType().maxRF * 4 - power), false)
+                            if (move != 0) {
+                                power += move;
+                            }
+                        } else if (energy.canReceive()) {
+                            var move = energy.receiveEnergy(Math.min(getPipeType().maxRF, power), false)
+                            if (move != 0) {
+                                power -= move;
+                            }
                         }
                     }
-                    if(tile!!.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, face.opposite)){
-                        var consumer = tile.getCapability(TeslaCapabilities.CAPABILITY_CONSUMER, face.opposite)
-                        var move = consumer.givePower(Math.min(getPipeType().maxRF, power).toLong(), false);
-                        if(move != 0L){
-                            power -= move.toInt();
-                        }
-                    }
-                    if (tile is IEnergyConnection) {
+                    //RF
+                    if (FluxedRedstone.RFSupport && tile is IEnergyConnection) {
                         if (tile is IEnergyProvider) {
                             if (tile.canConnectEnergy(face)) {
                                 var move = tile.extractEnergy(face.opposite, Math.min(getPipeType().maxRF, getPipeType().maxRF * 4 - power), false)
@@ -297,7 +297,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
     }
 
 
-    override fun writeToNBT(tag: NBTTagCompound?) : NBTTagCompound {
+    override fun writeToNBT(tag: NBTTagCompound?): NBTTagCompound {
         super.writeToNBT(tag)
         tag!!.setInteger("power", power)
         return tag

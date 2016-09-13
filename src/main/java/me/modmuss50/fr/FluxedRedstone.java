@@ -1,9 +1,9 @@
 package me.modmuss50.fr;
 
-import reborncore.mcmultipart.multipart.MultipartRegistry;
 import me.modmuss50.fr.client.PipeModelBakery;
 import me.modmuss50.fr.mutlipart.ItemMultipartPipe;
 import me.modmuss50.fr.mutlipart.PipeStateHelper;
+import me.modmuss50.fr.mutlipart.TeslaManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -11,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -18,10 +19,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import reborncore.RebornCore;
 import reborncore.common.util.CraftingHelper;
+import reborncore.mcmultipart.multipart.MultipartRegistry;
 
 import java.util.HashMap;
 
-@Mod(modid = "fluxedredstone", name = "FluxedRedstone", version = "@MODVERSION@", dependencies = "required-after:reborncore;required-after:reborncore-mcmultipart;required-after:tesla")
+@Mod(modid = "fluxedredstone", name = "FluxedRedstone", version = "@MODVERSION@", dependencies = "required-after:reborncore;required-after:reborncore-mcmultipart;required-after:Forge@[12.18.1.2080,);")
 public class FluxedRedstone {
 
     public static HashMap<PipeTypeEnum, Item> itemMultiPipe = new HashMap<>();
@@ -31,6 +33,12 @@ public class FluxedRedstone {
     public static FluxedRedstoneCreativeTab creativeTab;
 
     public static Config config;
+
+    public static boolean teslaSupport;
+
+    public static boolean RFSupport;
+
+    public static TeslaManager teslaManager;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -42,6 +50,12 @@ public class FluxedRedstone {
     public void init(FMLInitializationEvent event) {
         stateHelper = new PipeStateHelper();
         creativeTab = new FluxedRedstoneCreativeTab();
+        if(!Loader.isModLoaded("Tesla")){
+            teslaSupport = false;
+        } else if (teslaSupport){
+            teslaManager = new TeslaManager();
+        }
+
 
 
         for (PipeTypeEnum typeEnum : PipeTypeEnum.values()) {
