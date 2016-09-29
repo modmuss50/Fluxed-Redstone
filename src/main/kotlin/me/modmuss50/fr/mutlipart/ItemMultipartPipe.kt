@@ -1,6 +1,5 @@
 package me.modmuss50.fr.mutlipart
 
-import me.modmuss50.fr.PipeTypeEnum
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
@@ -14,12 +13,13 @@ import reborncore.mcmultipart.multipart.IMultipart
 class ItemMultipartPipe(val type: PipeTypeEnum) : ItemMultiPart() {
 
     override fun createPart(p0: World?, p1: BlockPos?, p2: EnumFacing?, p3: Vec3d?, p4: ItemStack?, p5: EntityPlayer?): IMultipart? {
-        return type.classType.newInstance()
+        return type.getJavaClass().newInstance() as IMultipart?
     }
 
     override fun addInformation(stack: ItemStack?, playerIn: EntityPlayer?, tooltip: MutableList<String>?, advanced: Boolean) {
         super.addInformation(stack, playerIn, tooltip, advanced)
-        //FE for forge energy?
-        tooltip!!.add("${TextFormatting.GREEN}${type.maxRF} FE / tick")
+        tooltip!!.add("${TextFormatting.GREEN}${type.maxRF} FU / tick")
     }
+
+
 }

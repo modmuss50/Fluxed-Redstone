@@ -1,5 +1,6 @@
 package me.modmuss50.fr
 
+import me.modmuss50.fr.mutlipart.PipeTypeEnum
 import net.minecraftforge.common.config.Configuration
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import java.io.File
@@ -18,6 +19,5 @@ class Config(file: File?) : Configuration(file) {
         FluxedRedstone.teslaSupport = getBoolean("TESLA", "PowerNet", true, "Enable Tesla support")
         this.save()
     }
-
 
 }

@@ -1,7 +1,7 @@
 package me.modmuss50.fr.mutlipart.types
 
-import me.modmuss50.fr.PipeTypeEnum
 import me.modmuss50.fr.mutlipart.PipeMultipart
+import me.modmuss50.fr.mutlipart.PipeTypeEnum
 
 /**
  * Created by mark on 06/01/2016.

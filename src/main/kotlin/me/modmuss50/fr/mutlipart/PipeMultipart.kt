@@ -4,8 +4,9 @@ import cofh.api.energy.IEnergyConnection
 import cofh.api.energy.IEnergyProvider
 import cofh.api.energy.IEnergyReceiver
 import me.modmuss50.fr.FluxedRedstone
-import me.modmuss50.fr.PipeTypeEnum
 import net.minecraft.block.Block
+import net.minecraft.block.properties.PropertyBool
+import net.minecraft.block.properties.PropertyEnum
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
@@ -20,16 +21,14 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.common.property.ExtendedBlockState
 import net.minecraftforge.common.property.IExtendedBlockState
+import net.minecraftforge.common.property.Properties
 import net.minecraftforge.energy.CapabilityEnergy
 import net.minecraftforge.energy.IEnergyStorage
 import reborncore.common.misc.Functions
 import reborncore.common.misc.vecmath.Vecs3dCube
 import reborncore.mcmultipart.MCMultiPartMod
 import reborncore.mcmultipart.microblock.IMicroblock
-import reborncore.mcmultipart.multipart.ISlottedPart
-import reborncore.mcmultipart.multipart.Multipart
-import reborncore.mcmultipart.multipart.MultipartHelper
-import reborncore.mcmultipart.multipart.PartSlot
+import reborncore.mcmultipart.multipart.*
 import reborncore.mcmultipart.raytrace.PartMOP
 import java.util.*
 
@@ -58,7 +57,8 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
 
     fun refreshBounding() {
         val centerFirst = (center - offset).toDouble()
-        val w = (getPipeType().thickness / 16) - 0.5
+        val thickness = getPipeType().thickness!!
+        val w = (thickness / 16) - 0.5
         boundingBoxes[6] = Vecs3dCube(centerFirst.toDouble() - w - 0.03, centerFirst.toDouble() - w - 0.08, centerFirst.toDouble() - w - 0.03, centerFirst.toDouble() + w + 0.08,
                 centerFirst.toDouble() + w + 0.04, centerFirst.toDouble() + w + 0.08)
 
@@ -141,7 +141,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
         if (dir != null) {
             if (internalShouldConnectTo(pos, dir)) {
                 var otherPipe = getPipe(world, pos!!.offset(dir), dir);
-                if (otherPipe != null && !otherPipe!!.internalShouldConnectTo(otherPipe!!.pos, dir.opposite)) {
+                if (otherPipe != null && !otherPipe.internalShouldConnectTo(otherPipe.pos, dir.opposite)) {
                     return false
                 }
                 return true
@@ -160,7 +160,6 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                 }
             }
         }
-
 
 //        if (!OcclusionHelper.occlusionTest(container.parts, this, boundingBoxes[Functions.getIntDirFromDirection(dir)]!!.toAABB())) {
 //            return false;
@@ -213,7 +212,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
     override fun getExtendedState(state: IBlockState?): IBlockState? {
         var extState = state as IExtendedBlockState;
 
-        return extState.withProperty(FluxedRedstone.stateHelper.UP, shouldConnectTo(pos, EnumFacing.UP))!!.withProperty(FluxedRedstone.stateHelper.DOWN, shouldConnectTo(pos, EnumFacing.DOWN))!!.withProperty(FluxedRedstone.stateHelper.NORTH, shouldConnectTo(pos, EnumFacing.NORTH))!!.withProperty(FluxedRedstone.stateHelper.EAST, shouldConnectTo(pos, EnumFacing.EAST))!!.withProperty(FluxedRedstone.stateHelper.WEST, shouldConnectTo(pos, EnumFacing.WEST))!!.withProperty(FluxedRedstone.stateHelper.SOUTH, shouldConnectTo(pos, EnumFacing.SOUTH)).withProperty(FluxedRedstone.stateHelper.typeProp, getPipeType())
+        return extState.withProperty(UP, shouldConnectTo(pos, EnumFacing.UP))!!.withProperty(DOWN, shouldConnectTo(pos, EnumFacing.DOWN))!!.withProperty(NORTH, shouldConnectTo(pos, EnumFacing.NORTH))!!.withProperty(EAST, shouldConnectTo(pos, EnumFacing.EAST))!!.withProperty(WEST, shouldConnectTo(pos, EnumFacing.WEST))!!.withProperty(SOUTH, shouldConnectTo(pos, EnumFacing.SOUTH)).withProperty(TYPE, getPipeType())
     }
 
     override fun onAdded() {
@@ -227,7 +226,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
     }
 
     override fun createBlockState(): BlockStateContainer? {
-        return ExtendedBlockState(MCMultiPartMod.multipart, arrayOf(FluxedRedstone.stateHelper.typeProp), arrayOf(FluxedRedstone.stateHelper.UP, FluxedRedstone.stateHelper.DOWN, FluxedRedstone.stateHelper.NORTH, FluxedRedstone.stateHelper.EAST, FluxedRedstone.stateHelper.WEST, FluxedRedstone.stateHelper.SOUTH))
+        return ExtendedBlockState(MCMultiPartMod.multipart, arrayOf(TYPE), arrayOf(UP, DOWN, NORTH, EAST, WEST, SOUTH))
     }
 
     override fun update() {
@@ -245,7 +244,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                     var tile = world.getTileEntity(offPos)!!
                     //Tesla
                     if(FluxedRedstone.teslaSupport){
-                        FluxedRedstone.teslaManager!!.update(this, tile, face)
+                        FluxedRedstone.teslaManager.update(this, tile, face)
                     }
                     //Forge
                     if (tile.hasCapability(CapabilityEnergy.ENERGY, face.opposite)) {
@@ -325,4 +324,16 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
     override fun getHardness(hit: PartMOP?): Float {
         return 1F
     }
+
+    companion  object  {
+        val UP = Properties.toUnlisted(PropertyBool.create("up"))
+        val DOWN = Properties.toUnlisted(PropertyBool.create("down"))
+        val NORTH = Properties.toUnlisted(PropertyBool.create("north"))
+        val EAST = Properties.toUnlisted(PropertyBool.create("east"))
+        val SOUTH = Properties.toUnlisted(PropertyBool.create("south"))
+        val WEST = Properties.toUnlisted(PropertyBool.create("west"))
+
+        var TYPE = PropertyEnum.create("variant", PipeTypeEnum::class.java)
+    }
+
 }
