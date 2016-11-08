@@ -1,8 +1,8 @@
 package me.modmuss50.fr
 
 import me.modmuss50.fr.client.PipeModelBakery
+import me.modmuss50.fr.mutlipart.IC2Interface
 import me.modmuss50.fr.mutlipart.ItemMultipartPipe
-import me.modmuss50.fr.mutlipart.PipeMultipart
 import me.modmuss50.fr.mutlipart.PipeTypeEnum
 import me.modmuss50.fr.mutlipart.TeslaManager
 import net.minecraft.creativetab.CreativeTabs
@@ -23,7 +23,6 @@ import reborncore.common.util.CraftingHelper
 import reborncore.mcmultipart.multipart.IMultipart
 import reborncore.mcmultipart.multipart.MultipartRegistry
 import java.util.*
-import kotlin.reflect.KClass
 
 @Mod(modid = "fluxedredstone", name = "FluxedRedstone", version = "@MODVERSION@", dependencies = "required-after:reborncore;required-after:reborncore-mcmultipart;required-after:Forge@[12.18.1.2080,);")
 class FluxedRedstone {
@@ -40,6 +39,12 @@ class FluxedRedstone {
             teslaSupport = false
         } else if (teslaSupport) {
             teslaManager = TeslaManager()
+        }
+
+        if (!Loader.isModLoaded("IC2")) {
+            ic2Support = false
+        } else {
+            ic2Interface = IC2Interface()
         }
 
 
@@ -101,6 +106,12 @@ class FluxedRedstone {
         var teslaSupport: Boolean = false
 
         var RFSupport: Boolean = false
+
+        var ic2Support: Boolean = false
+
+        var rfPerEU: Double = 0.0
+
+        lateinit var ic2Interface: IC2Interface
     }
 
 }

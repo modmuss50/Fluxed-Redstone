@@ -17,6 +17,8 @@ class Config(file: File?) : Configuration(file) {
         }
         FluxedRedstone.RFSupport = getBoolean("RF", "PowerNet", true, "Enable RF support")
         FluxedRedstone.teslaSupport = getBoolean("TESLA", "PowerNet", true, "Enable Tesla support")
+        FluxedRedstone.ic2Support = getBoolean("IC2", "PowerNet", true, "Enable Ic2 support")
+        FluxedRedstone.rfPerEU = getString("euPerRF", "PowerNet", "4", "Number of RF units per each unit of Ic2 EU").toDouble()
         this.save()
     }
 

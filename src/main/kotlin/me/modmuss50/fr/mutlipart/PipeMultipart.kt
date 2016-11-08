@@ -3,12 +3,18 @@ package me.modmuss50.fr.mutlipart
 import cofh.api.energy.IEnergyConnection
 import cofh.api.energy.IEnergyProvider
 import cofh.api.energy.IEnergyReceiver
+import ic2.api.energy.EnergyNet
+import ic2.api.energy.event.EnergyTileLoadEvent
+import ic2.api.energy.tile.IEnergySink
+import ic2.api.energy.tile.IEnergySource
+import ic2.api.energy.tile.IEnergyTile
 import me.modmuss50.fr.FluxedRedstone
 import net.minecraft.block.Block
 import net.minecraft.block.properties.PropertyBool
 import net.minecraft.block.properties.PropertyEnum
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
@@ -19,11 +25,13 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.property.ExtendedBlockState
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.common.property.Properties
 import net.minecraftforge.energy.CapabilityEnergy
 import net.minecraftforge.energy.IEnergyStorage
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import reborncore.common.misc.Functions
 import reborncore.common.misc.vecmath.Vecs3dCube
 import reborncore.mcmultipart.MCMultiPartMod
@@ -186,6 +194,14 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
             if (tile.hasCapability(CapabilityEnergy.ENERGY, dir?.opposite)) {
                 return true
             }
+            if (FluxedRedstone.ic2Support && (FluxedRedstone.ic2Interface.connectionQueue.contains(tile.pos) ||
+                FluxedRedstone.ic2Interface.connectionCache.contains(this, dir))) {
+                FluxedRedstone.ic2Interface.connectionQueue.remove(tile.pos)
+                if (!FluxedRedstone.ic2Interface.connectionCache.contains(this, dir)) {
+                    FluxedRedstone.ic2Interface.connectionCache.put(this, dir, EnergyNet.instance.getTile(tile.world, tile.pos))
+                }
+                return true
+            }
         }
 
         return false
@@ -284,6 +300,32 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                             }
                         }
                     }
+
+                    // EU
+                    if (FluxedRedstone.ic2Support && IC2Interface.ic2Inititalized) {
+                        val ic2Tile = EnergyNet.instance.getTile(tile.world, tile.pos)
+                        if (ic2Tile != null) {
+                            if (ic2Tile is IEnergySource && ic2Tile.emitsEnergyTo(IC2Interface.DUMMY_ACCEPTOR, face.opposite)) {
+                                Minecraft.getMinecraft().thePlayer?.sendChatMessage("Pull " + ic2Tile.javaClass.name)
+                                var move = Math.min(getPipeType().maxRF.toDouble() / FluxedRedstone.rfPerEU, (getPipeType().maxRF * 4 - power) / FluxedRedstone.rfPerEU)
+                                if (move != 0.0 && move <= ic2Tile.offeredEnergy) {
+                                    ic2Tile.drawEnergy(move)
+                                    power += Math.round(move * FluxedRedstone.rfPerEU).toInt()
+                                }
+                            }
+
+                            else if (ic2Tile is IEnergySink && ic2Tile.acceptsEnergyFrom(IC2Interface.DUMMY_EMITTER, face.opposite)) {
+                                Minecraft.getMinecraft().thePlayer?.sendChatMessage("Push " + ic2Tile.javaClass.name)
+                                var move = Math.min(getPipeType().maxRF.toDouble() / FluxedRedstone.rfPerEU, power / FluxedRedstone.rfPerEU)
+                                if (move != 0.0 && ic2Tile.demandedEnergy >= move) {
+                                    var leftover = ic2Tile.injectEnergy(face.opposite, move, 12.0) // What does the 3rd parameter do? Someone tell me!
+                                    power -= Math.round(move * FluxedRedstone.rfPerEU).toInt()
+                                    power += Math.floor(leftover * FluxedRedstone.rfPerEU).toInt()
+                                }
+                            }
+                        }
+                    }
+
                     var pipe = getPipe(world, pos.offset(face), face)
                     if (pipe != null) {
                         var averPower = (power + pipe.power) / 2
