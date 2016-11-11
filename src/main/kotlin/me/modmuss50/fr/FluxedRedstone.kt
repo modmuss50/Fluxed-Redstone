@@ -5,6 +5,7 @@ import me.modmuss50.fr.mutlipart.IC2Interface
 import me.modmuss50.fr.mutlipart.ItemMultipartPipe
 import me.modmuss50.fr.mutlipart.PipeTypeEnum
 import me.modmuss50.fr.mutlipart.TeslaManager
+import me.modmuss50.fr.network.FRNetworkHandler
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -45,6 +46,8 @@ class FluxedRedstone {
             ic2Support = false
         } else {
             ic2Interface = IC2Interface()
+            network = FRNetworkHandler()
+            network.registerPackets()
         }
 
 
@@ -112,6 +115,8 @@ class FluxedRedstone {
         var rfPerEU: Double = 0.0
 
         lateinit var ic2Interface: IC2Interface
+
+        lateinit var network: FRNetworkHandler
     }
 
 }
