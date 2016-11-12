@@ -209,7 +209,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                 return true
             }
             if (FluxedRedstone.ic2Support) {
-                if (world.isRemote && ic2ConnectionCache.contains(dir?.opposite)) {
+                if (world.isRemote && ic2ConnectionCache.contains(dir)) {
                     return true
                 } else if (!world.isRemote) {
                     return FluxedRedstone.ic2Interface.connectable(EnergyNet.instance.getTile(world, pos.offset(dir!!)), dir.opposite)
