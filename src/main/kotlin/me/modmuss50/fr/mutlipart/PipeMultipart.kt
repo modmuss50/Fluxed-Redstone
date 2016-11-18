@@ -3,12 +3,18 @@ package me.modmuss50.fr.mutlipart
 import cofh.api.energy.IEnergyConnection
 import cofh.api.energy.IEnergyProvider
 import cofh.api.energy.IEnergyReceiver
+import ic2.api.energy.EnergyNet
+import ic2.api.energy.event.EnergyTileLoadEvent
+import ic2.api.energy.tile.*
+import ic2.core.energy.leg.EnergyNetLocalLeg
 import me.modmuss50.fr.FluxedRedstone
+import me.modmuss50.fr.network.FRNetworkHandler
 import net.minecraft.block.Block
 import net.minecraft.block.properties.PropertyBool
 import net.minecraft.block.properties.PropertyEnum
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
@@ -19,11 +25,15 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.property.ExtendedBlockState
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.common.property.Properties
 import net.minecraftforge.energy.CapabilityEnergy
 import net.minecraftforge.energy.IEnergyStorage
+import net.minecraftforge.fml.common.FMLCommonHandler
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.relauncher.Side
 import reborncore.common.misc.Functions
 import reborncore.common.misc.vecmath.Vecs3dCube
 import reborncore.mcmultipart.MCMultiPartMod
@@ -49,7 +59,9 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
 
     var connectedSides = HashMap<EnumFacing, BlockPos>()
 
-    var power = 0;
+    var ic2ConnectionCache = HashSet<EnumFacing>()
+
+    var power = 0
 
     init {
         refreshBounding()
@@ -128,8 +140,18 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
         return ResourceLocation("fluxedredstone:FRPipe")
     }
 
-    fun checkConnections() {
+    fun checkConnections(refreshIC2: Boolean = false) {
         connectedSides.clear()
+        if (FluxedRedstone.ic2Support && world.isRemote) {
+            if (refreshIC2) {
+                ic2ConnectionCache.clear()
+            }
+            if (nextId > 8192) nextId = 0
+            // Request a new connection map
+            nextId++
+            FluxedRedstone.ic2Interface.waiting.forcePut(nextId, this)
+            FRNetworkHandler.instance.sendToServer(FRNetworkHandler.MsgRequestIC2Map(nextId, pos))
+        }
         for (facing in EnumFacing.values()) {
             if (shouldConnectTo(pos, facing)) {
                 connectedSides.put(facing, pos)
@@ -186,6 +208,13 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
             if (tile.hasCapability(CapabilityEnergy.ENERGY, dir?.opposite)) {
                 return true
             }
+            if (FluxedRedstone.ic2Support) {
+                if (world.isRemote && ic2ConnectionCache.contains(dir)) {
+                    return true
+                } else if (!world.isRemote) {
+                    return FluxedRedstone.ic2Interface.connectable(EnergyNet.instance.getTile(world, pos.offset(dir!!)), dir.opposite)
+                }
+            }
         }
 
         return false
@@ -217,12 +246,12 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
 
     override fun onAdded() {
         super.onAdded()
-        checkConnections()
+        checkConnections(true)
     }
 
     override fun onNeighborBlockChange(block: Block?) {
         super.onNeighborBlockChange(block)
-        checkConnections()
+        checkConnections(true)
     }
 
     override fun createBlockState(): BlockStateContainer? {
@@ -232,7 +261,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
     override fun update() {
         if (world != null) {
             if (world.totalWorldTime % 80 == 0.toLong()) {
-                checkConnections()
+                checkConnections(false)
             }
             if (world.isRemote) {
                 return
@@ -284,6 +313,30 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                             }
                         }
                     }
+
+                    // EU
+                    if (FluxedRedstone.ic2Support && !world.isRemote) { // EnergyNet is serverside only
+                        val ic2Tile = EnergyNet.instance.getTile(tile.world, tile.pos)
+                        if (ic2Tile != null) {
+                            if (ic2Tile is IEnergySource && ic2Tile.emitsEnergyTo(IC2Interface.DUMMY_ACCEPTOR, face.opposite)) {
+                                var move = Math.min(getPipeType().maxRF.toDouble() / FluxedRedstone.rfPerEU, (getPipeType().maxRF * 4 - power) / FluxedRedstone.rfPerEU)
+                                if (move != 0.0 && move <= ic2Tile.offeredEnergy) {
+                                    ic2Tile.drawEnergy(move)
+                                    power += Math.round(move * FluxedRedstone.rfPerEU).toInt()
+                                }
+                            }
+
+                            else if (ic2Tile is IEnergySink && ic2Tile.acceptsEnergyFrom(IC2Interface.DUMMY_EMITTER, face.opposite)) {
+                                var move = Math.min(getPipeType().maxRF.toDouble() / FluxedRedstone.rfPerEU, power / FluxedRedstone.rfPerEU)
+                                if (move != 0.0 && ic2Tile.demandedEnergy >= move) {
+                                    var leftover = ic2Tile.injectEnergy(face.opposite, move, 12.0) // What does the 3rd parameter do? Someone tell me!
+                                    power -= Math.round(move * FluxedRedstone.rfPerEU).toInt()
+                                    power += Math.floor(leftover * FluxedRedstone.rfPerEU).toInt()
+                                }
+                            }
+                        }
+                    }
+
                     var pipe = getPipe(world, pos.offset(face), face)
                     if (pipe != null) {
                         var averPower = (power + pipe.power) / 2
@@ -334,6 +387,8 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
         val WEST = Properties.toUnlisted(PropertyBool.create("west"))
 
         var TYPE = PropertyEnum.create("variant", PipeTypeEnum::class.java)
+
+        var nextId = -1
     }
 
 }
