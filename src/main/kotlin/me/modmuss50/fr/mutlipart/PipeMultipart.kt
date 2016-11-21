@@ -45,7 +45,7 @@ import java.util.*
 open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
 
     override fun getSlotMask(): EnumSet<PartSlot>? {
-        return EnumSet.of(PartSlot.CENTER);
+        return EnumSet.of(PartSlot.CENTER)
     }
 
     open fun getPipeType(): PipeTypeEnum {
@@ -162,7 +162,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
     fun shouldConnectTo(pos: BlockPos?, dir: EnumFacing?): Boolean {
         if (dir != null) {
             if (internalShouldConnectTo(pos, dir)) {
-                var otherPipe = getPipe(world, pos!!.offset(dir), dir);
+                var otherPipe = getPipe(world, pos!!.offset(dir), dir)
                 if (otherPipe != null && !otherPipe.internalShouldConnectTo(otherPipe.pos, dir.opposite)) {
                     return false
                 }
@@ -184,10 +184,10 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
         }
 
 //        if (!OcclusionHelper.occlusionTest(container.parts, this, boundingBoxes[Functions.getIntDirFromDirection(dir)]!!.toAABB())) {
-//            return false;
+//            return false
 //        }
 
-        var otherPipe = getPipe(world, pos!!.offset(dir), dir);
+        var otherPipe = getPipe(world, pos!!.offset(dir), dir)
         if (otherPipe != null) {
             return true
         }
@@ -239,7 +239,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
     }
 
     override fun getExtendedState(state: IBlockState?): IBlockState? {
-        var extState = state as IExtendedBlockState;
+        var extState = state as IExtendedBlockState
 
         return extState.withProperty(UP, shouldConnectTo(pos, EnumFacing.UP))!!.withProperty(DOWN, shouldConnectTo(pos, EnumFacing.DOWN))!!.withProperty(NORTH, shouldConnectTo(pos, EnumFacing.NORTH))!!.withProperty(EAST, shouldConnectTo(pos, EnumFacing.EAST))!!.withProperty(WEST, shouldConnectTo(pos, EnumFacing.WEST))!!.withProperty(SOUTH, shouldConnectTo(pos, EnumFacing.SOUTH)).withProperty(TYPE, getPipeType())
     }
@@ -278,19 +278,19 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                     //Forge
                     if (tile.hasCapability(CapabilityEnergy.ENERGY, face.opposite)) {
                         var energy: IEnergyStorage = tile.getCapability(CapabilityEnergy.ENERGY, face.opposite)
-                        var didExtract = false;
+                        var didExtract = false
                         if (energy.canExtract()) {
                             var move = energy.extractEnergy(Math.min(getPipeType().maxRF, getPipeType().maxRF * 4 - power), false)
                             if (move != 0) {
-                                power += move;
-                                didExtract = true;
+                                power += move
+                                didExtract = true
                             }
 
                         }
                         if (energy.canReceive() && !didExtract) {
                             var move = energy.receiveEnergy(Math.min(getPipeType().maxRF, power), false)
                             if (move != 0) {
-                                power -= move;
+                                power -= move
                             }
                         }
                     }
@@ -300,7 +300,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                             if (tile.canConnectEnergy(face)) {
                                 var move = tile.extractEnergy(face.opposite, Math.min(getPipeType().maxRF, getPipeType().maxRF * 4 - power), false)
                                 if (move != 0) {
-                                    power += move;
+                                    power += move
                                 }
                             }
                         }
@@ -308,7 +308,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                             if (tile.canConnectEnergy(face)) {
                                 var move = tile.receiveEnergy(face.opposite, Math.min(getPipeType().maxRF, power), false)
                                 if (move != 0) {
-                                    power -= move;
+                                    power -= move
                                 }
                             }
                         }
@@ -344,7 +344,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                         power = averPower
                         if ((power + pipe.power) % 2 != 0) {
                             //This should fix rounding issues that cause power loss.
-                            pipe.power + 1;
+                            pipe.power + 1
                         }
                     }
                 }

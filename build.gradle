@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.0.4'
+    ext.kotlin_version = '1.0.5'
     repositories {
         mavenCentral()
         jcenter()
@@ -47,6 +47,10 @@ repositories {
     maven {
         url 'http://maven.epoxide.xyz'
     }
+	maven {
+		name = "ic2"
+		url = "http://maven.ic2.player.to/"
+	}
 }
 
 version = "2.5.0"
@@ -57,7 +61,7 @@ if (ENV.BUILD_NUMBER) {
 }
 
 minecraft {
-    version = "1.10.2-12.18.1.2084"
+    version = "1.10.2-12.18.2.2121"
     mappings = "snapshot_20160913"
     replace "@MODVERSION@", project.version
     makeObfSourceJar = false
@@ -72,6 +76,7 @@ dependencies {
     shadow "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     shadow "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "net.darkhax.tesla:Tesla:1.10.2-1.2.1.49:deobf"
+	compile 'net.industrial-craft:industrialcraft-2:2.6.58-ex110:dev'
 }
 
 processResources {
