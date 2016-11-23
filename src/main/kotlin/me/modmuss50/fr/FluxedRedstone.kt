@@ -11,6 +11,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.Loader
@@ -20,12 +21,13 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.Side
 import reborncore.RebornCore
+import reborncore.RebornRegistry
 import reborncore.common.util.CraftingHelper
 import reborncore.mcmultipart.multipart.IMultipart
 import reborncore.mcmultipart.multipart.MultipartRegistry
 import java.util.*
 
-@Mod(modid = "fluxedredstone", name = "FluxedRedstone", version = "@MODVERSION@", dependencies = "required-after:reborncore;required-after:reborncore-mcmultipart;required-after:Forge@[12.18.1.2080,);")
+@Mod(modid = "fluxedredstone", name = "FluxedRedstone", version = "@MODVERSION@", dependencies = "required-after:reborncore;required-after:reborncore-mcmultipart;required-after:forge@[12.18.1.2080,);")
 class FluxedRedstone {
 
     @Mod.EventHandler
@@ -54,7 +56,7 @@ class FluxedRedstone {
         for (typeEnum in PipeTypeEnum.values()) {
             MultipartRegistry.registerPart(typeEnum.getJavaClass() as Class<out IMultipart>?, "fluxedredstone:fluxedPipe." + typeEnum.friendlyName)
             itemMultiPipe.put(typeEnum, ItemMultipartPipe(typeEnum).setCreativeTab(creativeTab).setUnlocalizedName("fluxedredstone.itemFluxedPipe." + typeEnum.friendlyName))
-            GameRegistry.registerItem(itemMultiPipe[typeEnum], "itemFluxedPipe." + typeEnum.friendlyName)
+            RebornRegistry.registerItem(itemMultiPipe[typeEnum], ResourceLocation("itemFluxedPipe." + typeEnum.friendlyName))
             RebornCore.jsonDestroyer.registerObject(itemMultiPipe[typeEnum])
         }
 
@@ -91,8 +93,8 @@ class FluxedRedstone {
 
     class FluxedRedstoneCreativeTab : CreativeTabs("fluxedredstone") {
 
-        override fun getTabIconItem(): Item {
-            return FluxedRedstone.itemMultiPipe[PipeTypeEnum.ENDER]!!
+        override fun getTabIconItem(): ItemStack {
+            return ItemStack(FluxedRedstone.itemMultiPipe[PipeTypeEnum.ENDER]!!)
         }
     }
 

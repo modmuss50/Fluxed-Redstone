@@ -277,9 +277,9 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                     }
                     //Forge
                     if (tile.hasCapability(CapabilityEnergy.ENERGY, face.opposite)) {
-                        var energy: IEnergyStorage = tile.getCapability(CapabilityEnergy.ENERGY, face.opposite)
+                        var energy: IEnergyStorage? = tile.getCapability(CapabilityEnergy.ENERGY, face.opposite)
                         var didExtract = false
-                        if (energy.canExtract()) {
+                        if (energy!!.canExtract()) {
                             var move = energy.extractEnergy(Math.min(getPipeType().maxRF, getPipeType().maxRF * 4 - power), false)
                             if (move != 0) {
                                 power += move
