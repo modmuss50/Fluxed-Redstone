@@ -343,11 +343,11 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable, IEnergyStorag
                     if (pipe != null) {
                         var averPower = (power + pipe.power) / 2
                         pipe.power = averPower
-                        power = averPower
-                        if ((power + pipe.power) % 2 != 0) {
-                            //This should fix rounding issues that cause power loss.
-                            pipe.power + 1
+                        if(averPower % 2 != 0){
+                            averPower ++
                         }
+                        power = averPower
+
                     }
                 }
             }
