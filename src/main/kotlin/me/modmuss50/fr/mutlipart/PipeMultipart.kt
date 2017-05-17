@@ -4,9 +4,8 @@ import cofh.api.energy.IEnergyConnection
 import cofh.api.energy.IEnergyProvider
 import cofh.api.energy.IEnergyReceiver
 import ic2.api.energy.EnergyNet
-import ic2.api.energy.event.EnergyTileLoadEvent
-import ic2.api.energy.tile.*
-import ic2.core.energy.leg.EnergyNetLocalLeg
+import ic2.api.energy.tile.IEnergySink
+import ic2.api.energy.tile.IEnergySource
 import me.modmuss50.fr.FluxedRedstone
 import me.modmuss50.fr.network.FRNetworkHandler
 import net.minecraft.block.Block
@@ -14,7 +13,6 @@ import net.minecraft.block.properties.PropertyBool
 import net.minecraft.block.properties.PropertyEnum
 import net.minecraft.block.state.BlockStateContainer
 import net.minecraft.block.state.IBlockState
-import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
@@ -25,24 +23,24 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
-import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.property.ExtendedBlockState
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.common.property.Properties
 import net.minecraftforge.energy.CapabilityEnergy
 import net.minecraftforge.energy.IEnergyStorage
-import net.minecraftforge.fml.common.FMLCommonHandler
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.relauncher.Side
 import reborncore.common.misc.Functions
 import reborncore.common.misc.vecmath.Vecs3dCube
 import reborncore.mcmultipart.MCMultiPartMod
 import reborncore.mcmultipart.microblock.IMicroblock
-import reborncore.mcmultipart.multipart.*
+import reborncore.mcmultipart.multipart.ISlottedPart
+import reborncore.mcmultipart.multipart.Multipart
+import reborncore.mcmultipart.multipart.MultipartHelper
+import reborncore.mcmultipart.multipart.PartSlot
 import reborncore.mcmultipart.raytrace.PartMOP
 import java.util.*
 
-open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
+open class PipeMultipart() : Multipart(), ISlottedPart, ITickable, IEnergyStorage {
 
     override fun getSlotMask(): EnumSet<PartSlot>? {
         return EnumSet.of(PartSlot.CENTER)
@@ -279,15 +277,16 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
                     if (tile.hasCapability(CapabilityEnergy.ENERGY, face.opposite)) {
                         var energy: IEnergyStorage? = tile.getCapability(CapabilityEnergy.ENERGY, face.opposite)
                         var didExtract = false
-                        if (energy!!.canExtract()) {
-                            var move = energy.extractEnergy(Math.min(getPipeType().maxRF, getPipeType().maxRF * 4 - power), false)
-                            if (move != 0) {
-                                power += move
-                                didExtract = true
-                            }
-
-                        }
-                        if (energy.canReceive() && !didExtract) {
+                        //Let other machines push to FE though the caps
+//                        if (energy!!.canExtract()) {
+//                            var move = energy.extractEnergy(Math.min(getPipeType().maxRF, getPipeType().maxRF * 4 - power), false)
+//                            if (move != 0) {
+//                                power += move
+//                                didExtract = true
+//                            }
+//
+//                        }
+                        if (energy!!.canReceive() && !didExtract) {
                             var move = energy.receiveEnergy(Math.min(getPipeType().maxRF, power), false)
                             if (move != 0) {
                                 power -= move
@@ -391,4 +390,53 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable {
         var nextId = -1
     }
 
+    override fun hasCapability(capability: Capability<*>, facing: EnumFacing?): Boolean {
+        if(capability == CapabilityEnergy.ENERGY){
+            return true
+        }
+        return super.hasCapability(capability, facing)
+    }
+
+    override fun <T : Any?> getCapability(capability: Capability<T>, facing: EnumFacing?): T? {
+        if(capability == CapabilityEnergy.ENERGY){
+            return this as T
+        }
+        return super.getCapability(capability, facing)
+    }
+
+    override fun canExtract(): Boolean {
+        return true
+    }
+
+    override fun getMaxEnergyStored(): Int {
+        return getPipeType().maxRF * 4
+    }
+
+    override fun getEnergyStored(): Int {
+        return power
+    }
+
+    override fun extractEnergy(maxExtract: Int, simulate: Boolean): Int {
+        if (!canExtract())
+            return 0
+
+        val energyExtracted = Math.min(power, Math.min(getPipeType().maxRF, maxExtract))
+        if (!simulate)
+            power -= energyExtracted
+        return energyExtracted
+    }
+
+    override fun receiveEnergy(maxReceive: Int, simulate: Boolean): Int {
+        if (!canReceive())
+            return 0
+
+        val energyReceived = Math.min(maxEnergyStored - power, Math.min(getPipeType().maxRF, maxReceive))
+        if (!simulate)
+            power += energyReceived
+        return energyReceived
+    }
+
+    override fun canReceive(): Boolean {
+        return power < maxEnergyStored
+    }
 }
