@@ -269,6 +269,9 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable, IEnergyStorag
                 if (connectedSides.containsKey(face)) {
                     var offPos = pos.offset(face)
                     var tile = world.getTileEntity(offPos)!!
+                    if(tile == null){
+                        continue
+                    }
                     //Tesla
                     if(FluxedRedstone.teslaSupport){
                         FluxedRedstone.teslaManager.update(this, tile, face)
