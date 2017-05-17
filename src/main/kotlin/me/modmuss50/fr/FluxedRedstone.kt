@@ -17,6 +17,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
+import net.minecraftforge.fml.common.event.FMLMissingMappingsEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.Side
@@ -52,11 +53,10 @@ class FluxedRedstone {
             network.registerPackets()
         }
 
-
         for (typeEnum in PipeTypeEnum.values()) {
             MultipartRegistry.registerPart(typeEnum.getJavaClass() as Class<out IMultipart>?, "fluxedredstone:fluxedPipe." + typeEnum.friendlyName)
             itemMultiPipe.put(typeEnum, ItemMultipartPipe(typeEnum).setCreativeTab(creativeTab).setUnlocalizedName("fluxedredstone.itemFluxedPipe." + typeEnum.friendlyName))
-            RebornRegistry.registerItem(itemMultiPipe[typeEnum], ResourceLocation("itemFluxedPipe." + typeEnum.friendlyName))
+            RebornRegistry.registerItem(itemMultiPipe[typeEnum], ResourceLocation("fluxedredstone", "itemFluxedPipe." + typeEnum.friendlyName))
             RebornCore.jsonDestroyer.registerObject(itemMultiPipe[typeEnum])
         }
 
@@ -87,9 +87,22 @@ class FluxedRedstone {
                 'G', ItemStack(Items.GOLD_INGOT),
                 'R', ItemStack(Items.ENDER_PEARL),
                 'S', ItemStack(Items.GHAST_TEAR))
-
-
     }
+
+    @Mod.EventHandler
+    fun remap(event: FMLMissingMappingsEvent){
+        event.all
+                .filter { it.type == GameRegistry.Type.ITEM }
+                .forEach {
+                    for (typeEnum in PipeTypeEnum.values()) {
+                        if(it.resourceLocation.resourceDomain == "minecraft" && it.resourceLocation.resourcePath == "itemfluxedpipe." + typeEnum.friendlyName.toLowerCase()){
+                            println("Remapping " + it.resourceLocation.resourcePath)
+                            it.remap(itemMultiPipe.get(typeEnum))
+                        }
+                    }
+                }
+    }
+
 
     class FluxedRedstoneCreativeTab : CreativeTabs("fluxedredstone") {
 
