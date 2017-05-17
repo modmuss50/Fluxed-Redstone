@@ -53,7 +53,7 @@ repositories {
 	}
 }
 
-version = "2.6.0"
+version = "2.6.1"
 
 def ENV = System.getenv()
 if (ENV.BUILD_NUMBER) {
