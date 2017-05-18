@@ -343,7 +343,7 @@ open class PipeMultipart() : Multipart(), ISlottedPart, ITickable, IEnergyStorag
                     if (pipe != null) {
                         var averPower = (power + pipe.power) / 2
                         pipe.power = averPower
-                        if(averPower % 2 != 0){
+                        if(averPower % 2 != 0 && power != 0){
                             averPower ++
                         }
                         power = averPower
